@@ -536,7 +536,7 @@ function NewBill() {
       ["11", "Gradesheet Writing", "", "", "", "", "", "", ""],
       ["12", "Gradesheet Verification", "", "", "", "", "", "", ""],
       ["13", "Thesis Guide/Supervision", "", "", "", "", "", "", ""],
-      ["14", "President's Honorary Allowance", "", "", "", "", "", "", ""],
+      ["14", "Presidents Honorary Allowance", "", "", "", "", "", "", ""],
       [
         "15",
         "Examination Committee Member Honorarium",

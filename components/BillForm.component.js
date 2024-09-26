@@ -194,8 +194,8 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               <option value="Thesis Guide/Supervision">
                 Thesis Guide/Supervision
               </option>
-              <option value="President's Honorary Allowance">
-              President's Honorary Allowance
+              <option value="Presidents Honorary Allowance">
+              Presidents Honorary Allowance
               </option>
               <option value="Examination Committee Member Honorarium">
                 Examination Committee Member Honorarium
@@ -880,7 +880,7 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               
             </>
           )}
-          {job.jobName === "President's Honorary Allowance" && (
+          {job.jobName === "Presidents Honorary Allowance" && (
             <div style={{ marginBottom: "15px" }}>
               {/* Add other fields specific to this job */}
             </div>

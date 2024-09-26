@@ -173,7 +173,7 @@ function AllApprovedBill() {
             </tbody>
           </table>
           </div>) : (
-          <p>There's no approved PDF to view.</p> // Message when no approved bills exist
+          <p>There has no approved PDF to view.</p> // Message when no approved bills exist
         )}
       </div>
     </div>
