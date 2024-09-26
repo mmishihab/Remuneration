@@ -11,7 +11,7 @@ import { rateSheetImage64 } from "../../../assets/rateSheetImage64";
 import { fontNormal64 } from "../../../assets/fontNormal64";
 import { fontBold64 } from "../../../assets/fontBold64";
 import { storage, database } from "../../../firebase.config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL,getStorage,uploadString } from "firebase/storage";
 import { ref as dbRef, push } from "firebase/database";
 import BillForm from "../../../components/BillForm.component";
 import pdfMake from "pdfmake/build/pdfmake";
@@ -156,40 +156,147 @@ function NewBill() {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setUploading(true);
+  
+  //   try {
+  //     // Generate PDF with pdfMake
+  //     const docDefinition = generatePDF(formData);
+  
+  //     // Generate and download the PDF (works fine)
+  //     pdfMake.createPdf(docDefinition).download("remuneration_sheet.pdf");
+  
+  //     // Generate the PDF as a stream
+  //     const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+  
+  //     pdfDocGenerator.getStream(async (pdfStream) => {
+  //       // Convert the stream to a Blob
+  //       const chunks = [];
+  //       pdfStream.on('data', (chunk) => {
+  //         chunks.push(chunk);
+  //       });
+        
+  //       pdfStream.on('end', async () => {
+  //         const pdfBlob = new Blob(chunks, { type: 'application/pdf' });
+  
+  //         // Upload the Blob to Firebase Storage
+  //         const storageRef = ref(storage, `bills/${Date.now()}.pdf`);
+  //         await uploadBytes(storageRef, pdfBlob);
+  
+  //         // Get the download URL of the uploaded PDF
+  //         const downloadUrl = await getDownloadURL(storageRef);
+  
+  //         // Set the PDF URL to be displayed in the UI
+  //         setPdfUrl(downloadUrl);
+  
+  //         // Prepare data to be saved in Firebase Realtime Database
+  //         const submissionData = {
+  //           ...formData,
+  //           pdfUrl: downloadUrl,
+  //           date: new Date().toLocaleDateString(),
+  //           time: new Date().toLocaleTimeString(),
+  //           approved: false,
+  //         };
+  
+  //         // Push the data to the "formSubmissions" node in the database
+  //         await push(dbRef(database, "formSubmissions"), submissionData);
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error("Error generating or uploading PDF:", error);
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+  
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setUploading(true);
+
+  //   try {
+  //     // Generate PDF with pdfMake
+  //     const docDefinition = generatePDF(formData);
+  //     // Generate and download the PDF
+  //     pdfMake.createPdf(docDefinition).download("remuneration_sheet.pdf");
+
+  //     // Create the PDF and get its Blob
+  //     pdfMake.createPdf(docDefinition).getBlob(async (pdfBlob) => {
+  //       // Upload the Blob to Firebase Storage
+  //       const storageRef = ref(storage, `bills/${Date.now()}.pdf`);
+  //       await uploadBytes(storageRef, pdfBlob);
+
+  //       // Get the download URL of the uploaded PDF
+  //       const downloadUrl = await getDownloadURL(storageRef);
+
+  //       // Set the PDF URL to be displayed in the UI
+  //       setPdfUrl(downloadUrl);
+
+  //       // Prepare data to be saved in Firebase Realtime Database
+  //       const submissionData = {
+  //         ...formData,
+  //         pdfUrl: downloadUrl,
+  //         date: new Date().toLocaleDateString(),
+  //         time: new Date().toLocaleTimeString(),
+  //         approved: false,
+          
+  //       };
+
+  //       // Push the data to the "formSubmissions" node in the database
+  //       await push(dbRef(database, "formSubmissions"), submissionData);
+  //     });
+  //   } catch (error) {
+  //     console.error("Error generating or uploading PDF:", error);
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-
+  
     try {
-      // Generate PDF with pdfMake
+      // Generate the PDF definition
       const docDefinition = generatePDF(formData);
-      // Generate and download the PDF
-      pdfMake.createPdf(docDefinition).download("remuneration_sheet.pdf");
-
-      // Create the PDF and get its Blob
-      pdfMake.createPdf(docDefinition).getBlob(async (pdfBlob) => {
-        // Upload the Blob to Firebase Storage
+  
+      // Create the PDF as a Base64 string
+      pdfMake.createPdf(docDefinition).getBase64(async (pdfBase64) => {
+  
+        // Reference to the Firebase storage location
         const storageRef = ref(storage, `bills/${Date.now()}.pdf`);
-        await uploadBytes(storageRef, pdfBlob);
-
+        
+        // Upload the Base64 PDF to Firebase Storage
+        await uploadString(storageRef, pdfBase64, 'base64');
+        
         // Get the download URL of the uploaded PDF
         const downloadUrl = await getDownloadURL(storageRef);
-
-        // Set the PDF URL to be displayed in the UI
+  
+        // Set the PDF URL in the UI for display or further use
         setPdfUrl(downloadUrl);
-
-        // Prepare data to be saved in Firebase Realtime Database
+  
+        // Prepare the form data with the PDF download URL
         const submissionData = {
           ...formData,
           pdfUrl: downloadUrl,
           date: new Date().toLocaleDateString(),
           time: new Date().toLocaleTimeString(),
           approved: false,
-          
         };
-
-        // Push the data to the "formSubmissions" node in the database
+  
+        // Save the form data to Firebase Realtime Database
         await push(dbRef(database, "formSubmissions"), submissionData);
+  
+        // After uploading, trigger the download of the PDF for the user using the same Base64 data
+        const pdfBlob = new Blob([new Uint8Array(atob(pdfBase64).split("").map(char => char.charCodeAt(0)))], { type: 'application/pdf' });
+        const pdfUrlForDownload = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = pdfUrlForDownload;
+        a.download = 'remuneration_sheet.pdf';
+        a.click();
+        
+        // Revoke the URL to avoid memory leaks
+        URL.revokeObjectURL(pdfUrlForDownload);
       });
     } catch (error) {
       console.error("Error generating or uploading PDF:", error);
@@ -197,6 +304,9 @@ function NewBill() {
       setUploading(false);
     }
   };
+  
+
+
   const calculateRemuneration = (jobData) => {
     let totalAmount = 0;
     console.log("JobData:", jobData);
@@ -399,16 +509,6 @@ function NewBill() {
           const ratePerStudent = 200;
           totalAmount +=
             ratePerStudent * parseInt(jobData.numberOfStudents, 10);
-        break;
-      case "Script Evaluation":
-        const ratePerScript = 40; // Example rate
-        totalAmount += ratePerScript * parseInt(jobData.numberOfStudents, 10);
-        break;
-      case "Viva Voce Examination":
-        {
-          const ratePerHour = 200; // Example rate
-          totalAmount += ratePerHour * parseInt(jobData.examHours, 10);
-        }
         break;
       default:
         break;

@@ -26,7 +26,7 @@ const getAvailableSubCategories = (jobName, currentJobIndex) => {
     .map((job) => job.subCategory); // Get selected subCategories
 
   // Return only the subCategories that have not been selected yet for the same jobName
-  return (options) => options.filter((option) => !selectedSubCategories.includes(option));
+  return (options) => options.filter((option) => !selectedSubCategories.includes(option.value));
 };
 
 // Check if any of the "once selectable" jobs have been selected
@@ -165,43 +165,34 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               required
               style={inputStyle}
             >
-              {/* Dynamically filter the job names, removing "Question Paper Writing" if it has been selected */}
-        
               <option value="">Select Job</option>
               <option value="Question Paper Formulation">
-                Question Paper Formulation
-              </option>
-              <option value="Script Evaluation">Script Evaluation</option>
-              <option value="Viva Voce Examination">
-                Viva Voce Examination
+              প্রশ্নপত্র প্রণয়ন
               </option>
               {/* "Question Paper Writing" should only appear if it hasn't been selected */}
         {!formData.jobs.some((j) => j.jobName === "Question Paper Writing" && j.subCategory !== "" && index !== formData.jobs.indexOf(j)) && (
-          <option value="Question Paper Writing">Question Paper Writing</option>
+          <option value="Question Paper Writing">প্রশ্নপত্র লিখন</option>
         )}
-              {/* <option value="Question Paper Writing">
-                Question Paper Writing
-              </option> */}
               <option value="Question Paper Photocopy">
-                Question Paper Photocopy
+              প্রশ্নপত্র ফটোকপি
               </option>
-              <option value="Test Answer Key">Test Answer Key</option>
-              <option value="Oral Examination">Oral Examination</option>
-              <option value="Examiner">Examiner</option>
+              <option value="Test Answer Key">উত্তরপত্র পরীক্ষণ</option>
+              <option value="Oral Examination">মৌখিক পরীক্ষা</option>
+              <option value="Examiner">পরীক্ষক</option>
               <option value="Practical Examination Honors">
-                Practical Examination Honors
+              ব্যবহারিক পরীক্ষা সম্মানী
               </option>
               <option value="Thesis Guide/Supervision">
-                Thesis Guide/Supervision
+              থিসিস গাইড/সুপারভিশন
               </option>
               <option value="Presidents Honorary Allowance">
-              Presidents Honorary Allowance
+              সভাপতির সম্মানী ভাতা
               </option>
               <option value="Examination Committee Member Honorarium">
-                Examination Committee Member Honorarium
+              পরীক্ষা কমিটির সদস্য সম্মানী
               </option>
               <option value="Inspector Honorarium (Per Tutorial)">
-                Inspector Honorarium (Per Tutorial)
+              পরিদর্শক সম্মানী (প্রতি টিউটোরিয়াল)
               </option>
             </select>
           </div>
@@ -216,22 +207,21 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                   onChange={(e) => handleSubCategoryChange(e, index)}
                   required
                   style={inputStyle}
-                >
-                  <option value="">Select Sub-Category</option>
-                  {getAvailableSubCategories(
-                    "Question Paper Formulation",
-                    index
-                  )([
-                    "Theoretical Course",
-                    "Practical Course",
-                    "Certificate Course",
-                    "Tutorial",
-                    "Terminal",
-                  ]).map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
+                ><option value="">Select Sub-Category</option>
+                {getAvailableSubCategories(
+                  "Question Paper Formulation",
+                  index
+                )([
+                  { name: "তত্ত্বীয় কোর্স", value: "Theoretical Course" },
+                  { name: "ব্যবহারিক কোর্স", value: "Practical Course" },
+                  // { name: "", value: "Certificate Course" },
+                  { name: "টিউটোরিয়াল", value: "Tutorial" },
+                  { name: "টার্মিনাল", value: "Terminal" },
+                ]).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.name}
+                  </option>
+                ))}
                 </select>
               </div>
 
@@ -446,14 +436,22 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                   style={inputStyle}
                 >
                   <option value="">Select Sub-Category</option>
-                  <option value="Theoretical Course">Theoretical Course</option>
-                  <option value="Practical Course">Practical Course</option>
-                  <option value="Tutorial">Tutorial</option>
-                  <option value="Terminal">Terminal</option>
-                  <option value="Presentation">Presentation</option>
-                  <option value="3rd Examination / Scrutiny">
-                    3rd Examination / Scrutiny
-                  </option>
+                  {getAvailableSubCategories(
+                    "Test Answer Key",
+                    index
+                  )([
+                    { name: "তত্ত্বীয় কোর্স", value: "Theoretical Course" },
+                    { name: "ব্যবহারিক কোর্স", value: "Practical Course" },
+                    // { name: "", value: "Certificate Course" },
+                    { name: "টিউটোরিয়াল", value: "Tutorial" },
+                    { name: "টার্মিনাল", value: "Terminal" },
+                    { name: "প্রেজেন্টেশন", value: "Presentation" },
+                    { name: "৩য় পরীক্ষণ / স্ক্রুটিনি", value: "3rd Examination / Scrutiny" },
+                  ]).map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -661,19 +659,20 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                   style={inputStyle}
                 >
                   <option value="">Select Sub-Category</option>
-                  <option value="Field Work/Industrial Tour">
-                    Field Work/Industrial Tour
-                  </option>
-                  <option value="Practical Note Book">
-                    Practical Note Book
-                  </option>
-                  <option value="Testing of Collected Samples">
-                    Testing of Collected Samples
-                  </option>
-                  <option value="Project/Term Paper/Internship Report">
-                    Project/Term Paper/Internship Report
-                  </option>
-                  <option value="Thesis">Thesis (Masters/M.Phil/Ph.D)</option>
+                  {getAvailableSubCategories(
+                    "Examiner",
+                    index
+                  )([
+                    { name: "ফিল্ড ওয়ার্ক/ইনডাস্ট্রিয়াল ট্যুর", value: "Field Work/Industrial Tour" },
+                    { name: "ব্যবহারিক নোট বুক", value: "Practical Note Book" },
+                    { name: "সংগৃহীত নমুনা পরীক্ষণ", value: "Testing of Collected Samples" },
+                    { name: "প্রজেক্ট/ টার্ম পেপার/ইন্টার্নশিপ রিপোর্ট", value: "Project/Term Paper/Internship Report" },
+                    { name: "থিসিস", value: "Thesis" }
+                  ]).map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
