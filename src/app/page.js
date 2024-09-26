@@ -146,7 +146,7 @@ function SignIn() {
         </button>
       </div>
       <p style={{ fontSize: 16 }}>
-        Don't have an account?{" "}
+        Don not have an account?{" "}
         <span
           style={{
             color: color.teal,

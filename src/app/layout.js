@@ -1,5 +1,4 @@
 /** @format */
-
 import NavbarComponent from "../../components/NavBar.component";
 import UserContextProvider from "../../context/user.context";
 
@@ -12,16 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
+
       </head>
 
       <body style={styles.body}>
@@ -38,7 +28,7 @@ const styles = {
   body: {
     margin: 0,
     padding: 0,
-    fontFamily: "Montserrat",
+    fontFamily: "sans-serif",
     height: "100vh",
     width: "100vw",
     overflow: "hidden",

@@ -17,7 +17,6 @@ function AllBill() {
 
   useEffect(() => {
     setIsMounted(true);
-    console.log(savedUser);
   }, []);
 
   useEffect(() => {
