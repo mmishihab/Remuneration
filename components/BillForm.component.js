@@ -16,16 +16,23 @@ function BillForm({
   handleSubmit,
   uploading,
 }) {
-  // Function to get available subcategories for a specific jobName
-  const getAvailableSubCategories = (jobName, currentJobIndex) => {
-    const selectedSubCategories = formData.jobs
-      .filter((job, i) => i !== currentJobIndex && job.jobName === jobName) // Same jobName, excluding current job
-      .map((job) => job.subCategory); // Get selected subCategories
 
-    // Return only the subCategories that have not been selected yet for the same jobName
-    return (options) =>
-      options.filter((option) => !selectedSubCategories.includes(option));
-  };
+// Track jobs that should only be selectable once
+const onceSelectableJobs = ["Question Paper Writing"];
+// Function to get available subcategories for a specific jobName
+const getAvailableSubCategories = (jobName, currentJobIndex) => {
+  const selectedSubCategories = formData.jobs
+    .filter((job, i) => i !== currentJobIndex && job.jobName === jobName) // Same jobName, excluding current job
+    .map((job) => job.subCategory); // Get selected subCategories
+
+  // Return only the subCategories that have not been selected yet for the same jobName
+  return (options) => options.filter((option) => !selectedSubCategories.includes(option));
+};
+
+// Check if any of the "once selectable" jobs have been selected
+const isOnceSelectableJobUsed = formData.jobs.some((job) =>
+  onceSelectableJobs.includes(job.jobName)
+);
 
   return (
     <form
@@ -43,11 +50,22 @@ function BillForm({
     >
       {/** Teacher Details **/}
       <div style={{ marginBottom: "15px" }}>
-        <label style={labelStyle}>Name:</label>
+        <label style={labelStyle}>পরীক্ষকের নাম(বাংলায়):</label>
         <input
           type="text"
-          name="name"
-          value={formData.name}
+          name="nameBangla"
+          value={formData.nameBangla}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: "15px" }}>
+        <label style={labelStyle}>পদবী, পূর্ণ ঠিকানা:</label>
+        <input
+          type="text"
+          name="address"
+          value={formData.address}
           onChange={handleChange}
           required
           style={inputStyle}
@@ -55,7 +73,7 @@ function BillForm({
       </div>
       
       <div style={{ marginBottom: "15px" }}>
-        <label style={labelStyle}>Phone:</label>
+        <label style={labelStyle}>মোবাইল নম্বর:</label>
         <input
           type="tel"
           name="phone"
@@ -66,11 +84,44 @@ function BillForm({
         />
       </div>
       <div style={{ marginBottom: "15px" }}>
-        <label style={labelStyle}>Address:</label>
+        <label style={labelStyle}>বিষয়:</label>
         <input
           type="text"
-          name="address"
-          value={formData.address}
+          name="subject"
+          value={formData.subject}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: "15px" }}>
+        <label style={labelStyle}>পরীক্ষার নাম:</label>
+        <input
+          type="text"
+          name="examName"
+          value={formData.examName}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: "15px" }}>
+        <label style={labelStyle}>পরীক্ষার বৎসর:</label>
+        <input
+          type="text"
+          name="examYear"
+          value={formData.examYear}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: "15px" }}>
+        <label style={labelStyle}>পরীক্ষা অনুষ্ঠানের তারিখ:</label>
+        <input
+          type="text"
+          name="examDate"
+          value={formData.examDate}
           onChange={handleChange}
           required
           style={inputStyle}
@@ -109,11 +160,13 @@ function BillForm({
             <label style={labelStyle}>Job Name:</label>
             <select
               name="jobName"
-              value={job.jobName}
+              value={job.jobName || ""}
               onChange={(e) => handleJobChange(e, index)}
               required
               style={inputStyle}
             >
+              {/* Dynamically filter the job names, removing "Question Paper Writing" if it has been selected */}
+        
               <option value="">Select Job</option>
               <option value="Question Paper Formulation">
                 Question Paper Formulation
@@ -122,9 +175,13 @@ function BillForm({
               <option value="Viva Voce Examination">
                 Viva Voce Examination
               </option>
-              <option value="Question Paper Writing">
+              {/* "Question Paper Writing" should only appear if it hasn't been selected */}
+        {!formData.jobs.some((j) => j.jobName === "Question Paper Writing" && j.subCategory !== "" && index !== formData.jobs.indexOf(j)) && (
+          <option value="Question Paper Writing">Question Paper Writing</option>
+        )}
+              {/* <option value="Question Paper Writing">
                 Question Paper Writing
-              </option>
+              </option> */}
               <option value="Question Paper Photocopy">
                 Question Paper Photocopy
               </option>
@@ -285,8 +342,18 @@ function BillForm({
                   style={inputStyle}
                 >
                   <option value="">Select Sub-Category</option>
-                  <option value="Handwritten">Handwritten</option>
-                  <option value="Computer">Computer</option>
+                  {getAvailableSubCategories(
+                    "Question Paper Writing",
+                    index
+                  )([
+                    "Handwritten",
+                    "Computer",
+                  ]).map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                  
                 </select>
               </div>
 
@@ -907,7 +974,7 @@ function BillForm({
         </button>
       </div>
 
-      <div style={{ marginBottom: "15px", textAlign: "center" }}>
+      <div style={{ marginBottom: "80px", textAlign: "center" }}>
         <button type="submit" disabled={uploading} style={buttonStyle}>
           {uploading ? "Uploading..." : "Generate PDF"}
         </button>

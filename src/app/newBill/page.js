@@ -46,10 +46,17 @@ function NewBill() {
   const [isClient, setIsClient] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
+    name: savedUser.username,
     email: savedUser.email,
+    nameBangla: "",
     phone: "",
+    designation: "",
+    subject:"",
+    examName: "",
+    examYear: "",
+    examDate:"",
     address: "",
+
     jobs: [
       {
         jobName: "",
@@ -190,83 +197,6 @@ function NewBill() {
       setUploading(false);
     }
   };
-
-  // const calculateAmountPerStudent = (rate, students) => rate * parseInt(students, 10);
-
-  // const calculateRemuneration = (jobData) => {
-  //   let totalAmount = 0;
-  
-  //   const rates = {
-  //     "Question Paper Formulation": {
-  //       "Theoretical Course": {
-  //         "Honours/Masters": { "4": 1800, "3": 1500, "2 to 2.5": 1250 },
-  //         "M.Phill/P.H.D.": 2000,
-  //       },
-  //       Tutorial: (students) => calculateAmountPerStudent(200, students),
-  //       Terminal: (students) => calculateAmountPerStudent(200, students),
-  //       "Certificate Course": (students) => calculateAmountPerStudent(750, students),
-  //       "Practical Course": (students) => calculateAmountPerStudent(300, students),
-  //     },
-  //     "Question Paper Writing": {
-  //       Handwritten: (students) => calculateAmountPerStudent(70, students),
-  //       Computer: (students) => calculateAmountPerStudent(200, students),
-  //     },
-  //     "Question Paper Photocopy": {
-  //       Handwritten: 150,
-  //       Computer: 375,
-  //     },
-  //     "Test Answer Key": {
-  //       "Theoretical Course": {
-  //         "Honours/Masters": { "4": 1800, "3": 1500, "2 to 2.5": 1250 },
-  //         "M.Phill/P.H.D.": 650,
-  //       },
-  //       Tutorial: (students) => calculateAmountPerStudent(20, students),
-  //       Terminal: (students) => calculateAmountPerStudent(15, students),
-  //       "Certificate Course": (students) => calculateAmountPerStudent(750, students),
-  //       "3rd Examination / Scrutiny": 450,
-  //       "Practical Course": {
-  //         "6 to 8": 70,
-  //         "3 to 4": 50,
-  //       },
-  //     },
-  //     "Oral Examination": {
-  //       Honours: (students) => calculateAmountPerStudent(60, students),
-  //       Masters: (students) => calculateAmountPerStudent(85, students),
-  //       M.Phill: (students) => calculateAmountPerStudent(650, students),
-  //       "P.H.D.": (students) => calculateAmountPerStudent(700, students),
-  //     },
-  //     Examiner: {
-  //       "Field Work/Industrial Tour": (students) => calculateAmountPerStudent(75, students),
-  //       "Practical Note Book": (students) => calculateAmountPerStudent(20, students),
-  //       "Testing of Collected Samples": (students) => calculateAmountPerStudent(20, students),
-  //       "Project/Term Paper/Internship Report": (students) => calculateAmountPerStudent(400, students),
-  //       Thesis: {
-  //         "Masters Thesis": (students) => calculateAmountPerStudent(1000, students),
-  //         "M.Phill Thesis": (students) => calculateAmountPerStudent(2500, students),
-  //         "P.H.D. Thesis": (students) => calculateAmountPerStudent(4000, students),
-  //       },
-  //     },
-  //     "Practical Examination Honors": (hours) => calculateAmountPerStudent(250, hours),
-  //     "Script Evaluation": (students) => calculateAmountPerStudent(40, students),
-  //     "Viva Voce Examination": (hours) => calculateAmountPerStudent(200, hours),
-  //   };
-  
-  //   const jobRates = rates[jobData.jobName];
-  //   if (jobRates) {
-  //     const subCategoryRates = jobRates[jobData.subCategory];
-  //     if (typeof subCategoryRates === "function") {
-  //       totalAmount = subCategoryRates(jobData.numberOfStudents || jobData.examHours);
-  //     } else if (typeof subCategoryRates === "object" && jobData.subCategorySectors) {
-  //       totalAmount = subCategoryRates[jobData.subCategorySectors][jobData.examHours] || subCategoryRates[jobData.subCategorySectors];
-  //     } else {
-  //       totalAmount = subCategoryRates;
-  //     }
-  //   }
-  
-  //   return totalAmount || 0;
-  // };
-  
-  
   const calculateRemuneration = (jobData) => {
     let totalAmount = 0;
     console.log("JobData:", jobData);
@@ -341,9 +271,6 @@ function NewBill() {
             case "2 to 2.5":
               totalAmount = 1250;
               break;
-            default:
-              jobData.examHours = "";
-              totalAmount = 0;
           }
         } else if (
           jobData.subCategory === "Theoretical Course" &&
@@ -570,7 +497,7 @@ function NewBill() {
 
   const generateTemplateRows = (jobs) => {
     const templateRows = [
-      // Sample template rows, adjust as needed
+
       [
         "1",
         "Question Paper Formulation",
@@ -590,14 +517,16 @@ function NewBill() {
       ["3", "Question Paper Translation", "", "", "", "", "", "", ""],
       ["4", "Question Paper Writing", "", "", "", "", "", "", ""],
       ["5", "Question Paper Photocopy", "", "", "", "", "", "", ""],
-      ["6", "Test Answer Key", "Theoretical Course", "", "", "", "", "", ""],
+      ["6", "Test Answer Key", "", "", "", "", "", "", ""],
+      ["", "", "Theoretical Course", "", "", "", "", "", ""],
       ["", "", "Practical Course", "", "", "", "", "", ""],
       ["", "", "Tutorial", "", "", "", "", "", ""],
       ["", "", "Terminal", "", "", "", "", "", ""],
       ["", "", "Presentation", "", "", "", "", "", ""],
       ["", "", "3rd Examination / Scrutiny", "", "", "", "", "", ""],
       ["7", "Oral Examination", "", "", "", "", "", "", ""],
-      ["8", "Examiner", "Field Work/Industrial Tour", "", "", "", "", "", ""],
+      ["8", "Examiner", "", "", "", "", "", "", ""],
+      ["", "", "Field Work/Industrial Tour", "", "", "", "", "", ""],
       ["", "", "Practical Note Book", "", "", "", "", "", ""],
       ["", "", "Testing of Collected Samples", "", "", "", "", "", ""],
       ["", "", "Project/Term Paper/Internship Report", "", "", "", "", "", ""],
@@ -675,16 +604,41 @@ function NewBill() {
 
   const generatePDF = (formData) => {
     const docDefinition = {
-      pageSize: { width: 250 * 2.83464567, height: 356 * 2.83464567 }, // Set page size to Legal
+      pageSize: "Legal",// Set page size to Legal
       pageMargins: [20, 20, 20, 20], // Add margins
       defaultStyle: {
         font: "Nikosh", // Set Roboto as the default font
       },
       content: [
         {
-          image: logoBase64,
-          width: 30,
-          alignment: "center",
+          columns: [
+            {
+              width: '52%',
+              stack: [
+                {
+                  image: logoBase64,
+                  width: 30,
+                  alignment: "right",
+                },
+              ]
+            },
+            {
+              width: '48%',
+              stack: [
+                {
+                  text: "রেজিস্টারের পৃষ্ঠা নং..............................",
+                  style: "subInfoText",
+                  alignment: "right",
+                  margin: [0, 10, 0, 0]
+                },
+                {
+                  text:"পরীক্ষকের ক্রমিক নং..............................",
+                  style: "subInfoText",
+                  alignment: "right",
+                },
+              ]
+            }
+          ]
         },
         {
           text: "পরীক্ষা সংক্রান্ত কাজের পারিতোষিক বিল ফরম",
@@ -693,39 +647,39 @@ function NewBill() {
         },
         {
           text: "(বিল সংশ্লিষ্ট পরীক্ষা কমিটির চেয়ারম্যানের মাধ্যমে পরীক্ষা অনুষ্ঠিত হওয়ার এক বছরের মধ্যে পরীক্ষা নিয়ন্ত্রণ দপ্তরে দাখিল করতে হবে। প্রতি পরীক্ষার জন্য পৃথকভাবে বিল দাখিল করতে হবে।)",
-          style: "subInfoText",
+          style: "infoText",
         },
         {
           table: {
             widths: ['*', '*', '*', '*', '*'],
             body: [
               [
-                { text: 'Examinee Name(Bangla):', bold: true },
-                { text: formData.name || 'N/A', colSpan: 2 },
+                { text: 'পরীক্ষকের নাম(বাংলায়):', bold: true },
+                { text: formData.nameBangla || '', colSpan: 2 },
                 {},
-                { text: 'Subject:', bold: true },
-                { text: formData.name || 'N/A' },
+                { text: 'বিষয়:', bold: true },
+                { text: formData.subject || '' },
               ],
               [
-                { text: 'English(In capital letter):', bold: true },
-                { text: formData.nameEnglish || 'N/A', colSpan: 2 },
+                { text: 'ইংরেজি (বড় অক্ষরে):', bold: true },
+                { text: (formData.name).toUpperCase(), colSpan: 2 },
                 {},
-                { text: 'Exam Name:', bold: true },
-                { text: formData.examName || 'N/A' },
+                { text: 'পরীক্ষার নাম:', bold: true },
+                { text: formData.examName || '' },
               ],
               [
-                { text: 'Designation:', bold: true },
-                { text: formData.address || 'N/A', colSpan: 2 },
+                { text: 'পদবী, পূর্ণ ঠিকানা:', bold: true },
+                { text: formData.address || '', colSpan: 2 },
                 {},
-                { text: 'Exam year:', bold: true },
-                { text: formData.examYear || 'N/A' },
+                { text: 'পরীক্ষার বৎসর:', bold: true },
+                { text: formData.examYear || '' },
               ],
               [
-                { text: 'Mobile No:', bold: true },
-                { text: formData.phone || 'N/A', colSpan: 2 },
+                { text: 'মোবাইল নম্বর:', bold: true },
+                { text: formData.phone || '', colSpan: 2 },
                 {},
-                { text: 'Exam held date:', bold: true },
-                { text: formData.examDate || 'N/A' },
+                { text: 'পরীক্ষা অনুষ্ঠানের তারিখ:', bold: true },
+                { text: formData.examDate || '' },
               ]
             ]
           },
@@ -736,32 +690,22 @@ function NewBill() {
         {
           table: {
             headerRows: 1,
-            widths: [
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-              "auto",
-            ],
+            widths: [25, 120,'*', 35, 40, 35, 40, 40, 35],
             body: [
               [
-                "ক্রমিক নং",
-                "কাজের নাম",
-                "Sub Category",
-                "কোর্স নং",
-                "খাতা/ছাত্রের সংখ্যা",
-                "কত ঘন্টার পরীক্ষা",
-                "মোট দিন/সদস্য সংখ্যা",
-                "অর্ধ/পূর্ণ পত্র",
-                "টাকার পরিমাণ",
+                {text:"ক্রমিক নং", bold:true,alignment:'center'},
+                {text:"কাজের নাম", bold:true,alignment:'center',colSpan: 2},
+                {text:"", bold:true,alignment:'center'},
+                {text:"কোর্স নং", bold:true,alignment:'center'},
+                {text:"খাতা/ছাত্রের সংখ্যা", bold:true,alignment:'center'},
+                {text:"কত ঘন্টার পরীক্ষা", bold:true,alignment:'center'},
+                {text:"মোট দিন/সদস্য সংখ্যা", bold:true,alignment:'center'},
+                {text:"অর্ধ/পূর্ণ পত্র", bold:true,alignment:'center'},
+                {text:"টাকার পরিমাণ", bold:true,alignment:'center'},              
               ],
               ...generateTemplateRows(formData.jobs),
               [
-                { text: "মোট টাকা", colSpan: 8 },
+                { text: "মোট টাকা কথায় = ", colSpan: 8,bold:true },
                 {},
                 {},
                 {},
@@ -786,16 +730,18 @@ function NewBill() {
                   canvas: [
                     {
                       type: 'line',
-                      x1: 0, y1: 5,
-                      x2: 230, y2: 5, // Adjust line width based on the desired length
-                      lineWidth: 1.5
+                      x1: 80, y1: 5,
+                      x2: 180, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
                     }
-                  ]
+                  ],
+                  margin: [0, 10, 0, 5]  // Add margin below the line for spacing
                 },
                 {
-                  text: 'Signature',
-                  alignment: 'right',
-                  margin: [0, 5, 0, 0]
+                  text: 'প্রতি স্বাক্ষর, সভাপতি, পরীক্ষা কমিটি',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
                 }
               ]
             },
@@ -807,37 +753,362 @@ function NewBill() {
                   canvas: [
                     {
                       type: 'line',
-                      x1: 0, y1: 5,
-                      x2: 230, y2: 5, // Adjust line width based on the desired length
-                      lineWidth: 1.5,
+                      x1: 120, y1: 5,
+                      x2: 166, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
                     }
-                  ]
+                  ],
+                  margin: [0, 10, 0, 5]  // Add margin below the line for spacing
                 },
                 {
-                  text: 'Signature',
-                  alignment: 'right',
-                  margin: [0, 5, 0, 0]
+                  text: 'পরীক্ষকের স্বাক্ষর',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
                 }
               ]
             }
           ]
         },
+        {
+          text: `বিষয়:  ${formData.subject}`,
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          text: `পরীক্ষা:  ${formData.examName}`,
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          columns: [
+            {
+              width: '10%',
+              stack: [
+                {
+                  text: `প্রফেসর/ড./জনাব  `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+            {
+              width: '60%',
+              stack: [
+                {
+                  text: `   ${formData.name} `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  bold: true,
+                  fontSize: 10
+                },
+              ]
+            },
+            {
+              width: '10%',
+              stack: [
+                { 
+                  text: `  কে  মোট =    `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+            {
+              width: '15%',
+              stack: [
+                {
+                  text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  bold: true,
+                  fontSize : 10,
+                },
+              ]
+            },
+            {
+              width: '5%',
+              stack: [
+                {
+                  text: `  টাকা`, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  
+                },
+              ]
+            }
+          ]
+        },
+        
+        {
+          text: "(কথায়)................................................................................................................................................................................................................................................ মাত্র প্রদান করুন।",
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          text: "বিল সংশ্লিষ্ট চেক বুঝে পেলাম।",
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          columns: [
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 40, y1: 5,
+                      x2: 90, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
+                    }
+                  ],
+                  margin: [0, 8, 0, 5]  // Add margin below the line for spacing
+                },
+                {
+                  text: 'তারিখসহ গ্রহণকারীর স্বাক্ষর',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
+                }
+              ]
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 60, y1: 5,
+                      x2: 83, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
+                    }
+                  ],
+                  margin: [0, 8, 0, 5]  // Add margin below the line for spacing
+                },
+                {
+                  text: 'বিল সহকারী',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
+                }
+              ]
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 60, y1: 5,
+                      x2: 83, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
+                    }
+                  ],
+                  margin: [0, 8, 0, 5]  // Add margin below the line for spacing
+                },
+                {
+                  text: 'সেকশন অফিসার',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
+                }
+              ]
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 40, y1: 5,
+                      x2: 90, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
+                    }
+                  ],
+                  margin: [0, 8, 0, 5]  // Add margin below the line for spacing
+                },
+                {
+                  text: 'উপ-পরীক্ষা নিয়ন্ত্রক, চ.বি.',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
+                }
+              ]
+            },
 
+          ]
+        },
+        
+        {
+          text: "............................................................................................................................................................................................................................................................................................................", 
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          text: "পরীক্ষার পারিতোষিক বিল প্রাপ্তি স্বীকার", 
+          style: "subInfoText",
+          alignment: "center",
+          font: "Nikosh",
+        },
+        {   
+          text: `বিষয়:   ${formData.subject}                                                                                            পরীক্ষা :   ${formData.examName}`,
+          style: "subInfoText",
+          font: "Nikosh",
+        },
+        {
+          columns: [
+            {
+              width: '20%',
+              stack: [
+                {
+                  text: `প্রফেসর/ড./জনাব  `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+            {
+              width: '70%',
+              stack: [
+                {
+                  text: `   ${formData.name} `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  bold: true,
+                  fontSize: 10
+                },
+              ]
+            },
+            {
+              width: '2%',
+              stack: [
+                { 
+                  text: `  কে `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+          ]
+        },
+        {
+          columns: [
+            {
+              width: '5%',
+              stack: [
+                { 
+                  text: `মোট =    `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+            {
+              width: '10%',
+              stack: [
+                {
+                  text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  bold: true,
+                  fontSize : 10,
+                },
+              ]
+            },
+            {
+              width: '5%',
+              stack: [
+                {
+                  text: `  টাকা`, 
+                  style: "subInfoText",
+                  font: "Nikosh",
+                  
+                },
+              ]
+            },
+            {
+              width: '*',
+              stack: [
+                {
+                  text: ` (কথায়...............................................................................................................................................................................................)প্রদান করা হলো।`,
+                  style: "subInfoText",
+                  font: "Nikosh",
+                },
+              ]
+            },
+
+          ]
+        },
+        
+        {
+          columns: [
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: []
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: []
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: []
+            },
+            {
+              // Column for the second signature
+              width: '25%',
+              stack: [
+                {
+                  canvas: [
+                    {
+                      type: 'line',
+                      x1: 30, y1: 5,
+                      x2: 100, y2: 5, // Adjust line width based on the desired length
+                      lineWidth: 1
+                    }
+                  ],
+                  margin: [0, 10, 0, 5]  // Add margin below the line for spacing
+                },
+                {
+                  text: 'হিসাব নিয়ামক/উপ-হিসাব নিয়ামক',
+                  alignment: 'center',
+                  style: "subInfoText",
+                  margin: [0, -2, 0, 0] // Adjust vertical placement of text
+                }
+              ]
+            },
+
+          ]
+        },
         { text: "", pageBreak: "after" }, // Add a page break after the table
         {
           text: "বিভিন্ন পরীক্ষা সংক্রান্ত কাজের পারিতোষিক হার",
           style: "subheader",
           font: "Nikosh",
+          bold: true,
+          alignment: "center",
         },
         {
           text: "চট্টগ্রাম বিশ্ববিদ্যালয় সিন্ডিকেটের ৫৩০ তম সভার ৫২ নং সিদ্ধান্ত অনুযায়ী ২০১৯ সালের পরীক্ষা হতে কার্যকর হবে।",
           style: "infoText",
           font: "Nikosh",
+          alignment:  "center",
         },
         {
           image: rateSheetImage64,
-          width: 650,
-          height: 900,
+          width: 540,
           alignment: "center",
         },
       ],
@@ -846,30 +1117,30 @@ function NewBill() {
         header: {
           fontSize: 14,
           bold: true,
-          margin: [0, 0, 0, 20],
+          margin: [0, 2, 0, 2],
         },
         infoText: {
-          fontSize: 10,
-          margin: [0, 0, 0, 10],
+          fontSize: 8.5,
+          margin: [0, 0, 0, 1],
         },
         subInfoText: {
-          fontSize: 10,
-          margin: [0, 0, 0, 10],
+          fontSize: 8.2,
+          margin: [0, 0, 0, 1],
         },
 
         subheader: {
           fontSize: 12,
           bold: true,
-          margin: [0, 5, 0, 5],
+          margin: [0, 0, 0, 1],
         },
         table: {
-          fontSize: 10, // Set font size for the table
+          fontSize: 8.5, // Set font size for the table
         },
         tableCell: {
-          fontSize: 10, // Apply font size to individual cells if needed
+          fontSize: 8.5, // Apply font size to individual cells if needed
         },
         Signature: {
-          fontSize: 12,
+          fontSize: 8.2,
           margin: [30, 0, 0, 10],
         }
       },
