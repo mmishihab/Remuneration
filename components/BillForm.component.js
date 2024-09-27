@@ -18,7 +18,7 @@ function BillForm({
 }) {
 
 // Track jobs that should only be selectable once
-const onceSelectableJobs = ["Question Paper Writing"];
+const onceSelectableJobs = ["Question Paper Writing","Question Paper Photocopy"];
 // Function to get available subcategories for a specific jobName
 const getAvailableSubCategories = (jobName, currentJobIndex) => {
   const selectedSubCategories = formData.jobs
@@ -170,12 +170,13 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               প্রশ্নপত্র প্রণয়ন
               </option>
               {/* "Question Paper Writing" should only appear if it hasn't been selected */}
-        {!formData.jobs.some((j) => j.jobName === "Question Paper Writing" && j.subCategory !== "" && index !== formData.jobs.indexOf(j)) && (
-          <option value="Question Paper Writing">প্রশ্নপত্র লিখন</option>
-        )}
-              <option value="Question Paper Photocopy">
-              প্রশ্নপত্র ফটোকপি
-              </option>
+              {!formData.jobs.some((j) => j.jobName === "Question Paper Writing" && j.subCategory !== "" && index !== formData.jobs.indexOf(j)) && (
+                <option value="Question Paper Writing">প্রশ্নপত্র লিখন</option>
+              )}
+                    {/* "Question Paper Writing" should only appear if it hasn't been selected */}
+              {!formData.jobs.some((j) => j.jobName === "Question Paper Photocopy" && j.subCategory !== "" && index !== formData.jobs.indexOf(j)) && (
+                <option value="Question Paper Photocopy">প্রশ্নপত্র ফটোকপি</option>
+              )}
               <option value="Test Answer Key">উত্তরপত্র পরীক্ষণ</option>
               <option value="Oral Examination">মৌখিক পরীক্ষা</option>
               <option value="Examiner">পরীক্ষক</option>
@@ -389,8 +390,19 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                   style={inputStyle}
                 >
                   <option value="">Select Sub-Category</option>
-                  <option value="Handwritten">Handwritten</option>
-                  <option value="Computer">Computer</option>
+                {getAvailableSubCategories(
+                  "Question Paper Photocopy",
+                  index
+                )([
+                  { name: "Handwritten", value: "Handwritten" },
+                  { name: "Computer", value: "Computer" },
+                ]).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.name}
+                  </option>
+                ))}
+
+                  
                 </select>
               </div>
 
