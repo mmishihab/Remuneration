@@ -6,6 +6,7 @@ import SideBarComponent from "../../../components/SideBar.component";
 import { UserContext } from "../../../context/user.context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { rateSheetImage64 } from "../../../assets/rateSheetImage64";
 
 function RemunerationRateSheet() {
   const { savedUser } = useContext(UserContext);
@@ -30,17 +31,20 @@ function RemunerationRateSheet() {
 
   return (
     <div
-      style={{ padding: 0, margin: 0, display: "flex", flexDirection: "row" }}
+      style={{ padding: 0, margin: 0, display: "flex", flexDirection: "row",height:"100vh"  }}
     >
       <SideBarComponent />
-      <div style={{ padding: 0, margin: 0, width: "70%" }}>
+      <div style={{ padding: 20, marginBottom: 0, width: "70%", overflowY: "auto", maxHeight: "100vh"}}>
         <h1>Remuneration Rate Sheet</h1>
-        <Image
-          src="/pdf_generation/pdfgenerator/assets/RenumerationRateSheet.jpg"
+        <div style={{ overflowY: "auto", maxHeight: "80vh"  }}>
+          <Image
+          src={rateSheetImage64}
           alt="Renumeration Rate Sheet"
-          width={600} // Specify width
-          height={400} // Specify height
+          width={1000} // Specify width
+          height={1300} // Specify height
         />
+        </div>
+        
       </div>
     </div>
   );

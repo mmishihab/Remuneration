@@ -60,14 +60,17 @@ const SideBarComponent = () => {
           All Approved Bill
         </li>
 
-        <li
-          style={{
-            color: color.white,
-            cursor: "pointer",
-          }}
-          onClick={() => router.push("/newBill")}>
-          Enter New Bill
-        </li>
+        {(savedUser?.roles?.teacher || savedUser?.roles?.chairman) && (
+  <li
+    style={{
+      color: color.white,
+      cursor: "pointer",
+    }}
+    onClick={() => router.push("/newBill")}
+  >
+    Enter New Bill
+  </li>
+)}
 
         <li
           style={{
