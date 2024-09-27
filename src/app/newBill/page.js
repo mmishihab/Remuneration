@@ -587,7 +587,7 @@ function NewBill() {
     "Gradesheet Writing": "গ্রেডশীট লিখন",
     "Gradesheet Verification": "গ্রেডশীট যাচাইকরণ",
     "Thesis Guide/Supervision": "থিসিস গাইড/সুপারভিশন",
-    "President's Honorary Allowance": "সভাপতির সম্মানী ভাতা",
+    "Presidents Honorary Allowance": "সভাপতির সম্মানী ভাতা",
     "Examination Committee Member Honorarium": "পরীক্ষা কমিটির সদস্য সম্মানী",
     "Inspector Honorarium (Per Tutorial)":
       "পরিদর্শক সম্মানী (প্রতি টিউটোরিয়াল)",
