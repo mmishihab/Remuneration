@@ -8,6 +8,7 @@ import { UserContext } from "../../../context/user.context";
 import { useRouter } from "next/navigation";
 import { logoBase64 } from "../../../assets/logo64";
 import { rateSheetImage64 } from "../../../assets/rateSheetImage64";
+import { signature } from "../../../assets/signature";
 import { fontNormal64 } from "../../../assets/fontNormal64";
 import { fontBold64 } from "../../../assets/fontBold64";
 import { storage, database } from "../../../firebase.config";
