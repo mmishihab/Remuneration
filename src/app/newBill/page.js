@@ -791,7 +791,7 @@ function NewBill() {
         {
           table: {
             headerRows: 1,
-            widths: [25, 120,'*', 35, 40, 35, 40, 40, 35],
+            widths: [25, 120,'*', 35, 40, 35, 40, 35, 40],
             body: [
               [
                 {text:"ক্রমিক নং", bold:true,alignment:'center'},
@@ -909,7 +909,7 @@ function NewBill() {
               width: '10%',
               stack: [
                 { 
-                  text: `  কে  মোট =    `, 
+                  text: `কে  মোট =    `, 
                   style: "subInfoText",
                   font: "Nikosh",
                 },
@@ -931,7 +931,7 @@ function NewBill() {
               width: '5%',
               stack: [
                 {
-                  text: `  টাকা`, 
+                  text: `টাকা`, 
                   style: "subInfoText",
                   font: "Nikosh",
                   
@@ -1093,7 +1093,7 @@ function NewBill() {
               width: '2%',
               stack: [
                 { 
-                  text: `  কে `, 
+                  text: `কে `, 
                   style: "subInfoText",
                   font: "Nikosh",
                 },
@@ -1129,7 +1129,7 @@ function NewBill() {
               width: '5%',
               stack: [
                 {
-                  text: `  টাকা`, 
+                  text: `টাকা`, 
                   style: "subInfoText",
                   font: "Nikosh",
                   
