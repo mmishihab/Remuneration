@@ -15,20 +15,20 @@ function NavbarComponent() {
       <div style={styles.navbar}>
         <div style={styles.menubar}>
           <div>
-            <AiOutlineMenu
+            {/* <AiOutlineMenu
               color={color.white}
               size={28}
               style={{ cursor: "pointer" }}
-            />
+            /> */}
           </div>
           <div style={styles.menutitle}>Digital Remuneration</div>
           <div>
-            <MdAccountCircle
+            {/* <MdAccountCircle
               color={color.white}
               size={28}
               style={{ cursor: "pointer" }}
               onClick={() => router.push("/userProfile")}
-            />
+            /> */}
           </div>
         </div>
       </div>
