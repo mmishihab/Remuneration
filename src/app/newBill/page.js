@@ -15,6 +15,7 @@ import { storage, database } from "../../../firebase.config";
 import { ref, uploadBytes, getDownloadURL,getStorage,uploadString } from "firebase/storage";
 import { ref as dbRef, push } from "firebase/database";
 import BillForm from "../../../components/BillForm.component";
+import UserInitialData from "../../../components/UserInitialData";
 import pdfMake from "pdfmake/build/pdfmake";
 import vfsFonts from "pdfmake/build/vfs_fonts"; // Import fonts
 // Define your Base64 encoded font
@@ -46,18 +47,17 @@ function NewBill() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     name: savedUser.username,
     email: savedUser.email,
     nameBangla: "",
     phone: "",
     designation: "",
-    subject:"",
+    subject: "",
     examName: "",
     examYear: "",
-    examDate:"",
+    examDate: "",
     address: "",
-
     jobs: [
       {
         jobName: "",
@@ -65,10 +65,11 @@ function NewBill() {
         courseNo: "",
         numberOfStudents: "",
         examHours: "",
+        subCategorySectors: "",
       },
     ],
-  });
-
+  };
+  const [formData, setFormData] = useState(initialFormData);
   const [pdfUrl, setPdfUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
@@ -81,6 +82,13 @@ function NewBill() {
       router.replace("/");
     }
   }, [isClient, savedUser, router]);
+
+  <UserInitialData savedUser={savedUser} setFormData={setFormData} />
+  
+  // Ensure the savedUser is loaded before rendering
+  if (!savedUser) {
+    return <div>Loading...</div>;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -850,6 +858,11 @@ function NewBill() {
               // Column for the second signature
               width: '50%',
               stack: [
+                // {
+                //   image: signature,
+                //   width: 100,
+                //   alignment: "center",
+                // },
                 {
                   canvas: [
                     {
@@ -859,7 +872,7 @@ function NewBill() {
                       lineWidth: 1
                     }
                   ],
-                  margin: [0, 10, 0, 5]  // Add margin below the line for spacing
+                  margin: [0, 0, 0, 5]  // Add margin below the line for spacing
                 },
                 {
                   text: 'পরীক্ষকের স্বাক্ষর',
@@ -1256,7 +1269,7 @@ function NewBill() {
   return (
     <div
       style={{ padding: 0, margin: 0, display: "flex", flexDirection: "row" }}
-    >
+    > <UserInitialData savedUser={savedUser} setFormData={setFormData} />
       <SideBarComponent />
       <div style={{ padding: 20, margin: 0, width: "70%", height: "100%" }}>
         <h1>Enter New Bill</h1>
