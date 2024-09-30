@@ -2,7 +2,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 function BillForm({
   formData,
@@ -33,10 +33,37 @@ const getAvailableSubCategories = (jobName, currentJobIndex) => {
 const isOnceSelectableJobUsed = formData.jobs.some((job) =>
   onceSelectableJobs.includes(job.jobName)
 );
+ // Spinner styles
+ const spinnerStyle = {
+  width: '1em',
+  height: '1em',
+  border: '3px solid #f3f3f3', // Light grey
+  borderTop: '3px solid #3498db', // Blue
+  borderRadius: '50%',
+  animation: uploading ? 'spin 1s linear infinite' : 'none', // Change the animation based on uploading state
+  marginRight: '5px',
+  display: 'inline-block',
+};
+
+  // State to track the loading status
+  const [loading, setLoading] = useState(false);
+  // Function to handle PDF generation and show loading spinner
+  const handleGeneratePDF = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Show loading spinner
+
+    // Call the submit handler to generate PDF
+    await handleSubmit(e);
+
+    // Simulate PDF download completion after a delay (you may need to handle this based on your actual PDF generation logic)
+    setTimeout(() => {
+      setLoading(false); // Hide loading spinner when PDF is ready
+    }, 3000); // Adjust this timeout as per actual file generation time
+  };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleGeneratePDF}
       style={{
         maxWidth: "100%",
         padding: "20px",
@@ -986,8 +1013,10 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
       </div>
 
       <div style={{ marginBottom: "80px", textAlign: "center" }}>
-        <button type="submit" disabled={uploading} style={buttonStyle}>
-          {uploading ? "Uploading..." : "Generate PDF"}
+        <button type="submit" disabled={loading || uploading} style={buttonStyle}>
+          {loading ? (
+            <div style={spinnerStyle}></div>
+          ) : uploading ? "Uploading..." : "Generate PDF"}
         </button>
       </div>
     </form>
