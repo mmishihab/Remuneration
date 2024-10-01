@@ -872,7 +872,7 @@ function NewBill() {
                       lineWidth: 1
                     }
                   ],
-                  margin: [0, 0, 0, 5]  // Add margin below the line for spacing
+                  margin: [0, 10, 0, 5]  // Add margin below the line for spacing
                 },
                 {
                   text: 'পরীক্ষকের স্বাক্ষর',
