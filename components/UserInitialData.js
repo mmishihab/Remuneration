@@ -8,7 +8,9 @@ const UserInitialData = ({ savedUser, setFormData }) => {
       email: "abujahed@gmail.com",
       nameBangla: "আবু জাহেদ",
       phone: "012345678",
-      address: "Assistant Professor",
+      address: "Assistant Professor, University of Chittagong.",
+      subject: "EEE",
+      examYear: "202",
       jobs: [
         {
           jobName: "Question Paper Formulation",
@@ -67,6 +69,8 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         nameBangla: matchedUser.nameBangla,
         phone: matchedUser.phone,
         address: matchedUser.address,
+        subject: matchedUser.subject,
+        examYear: matchedUser.examYear,
         jobs: matchedUser.jobs,
       }));
     }

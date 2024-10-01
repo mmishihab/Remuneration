@@ -118,7 +118,7 @@ function SignUp() {
           onChange={(e) => setEmail(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <label>Username</label>
+        <label>Full Name</label>
         <input
           style={{
             width: "600px",
@@ -127,7 +127,7 @@ function SignUp() {
             borderRadius: "5px",
           }}
           type="text"
-          placeholder="Enter Username"
+          placeholder="Enter Full Name"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           onKeyPress={handleKeyPress}
