@@ -11,6 +11,7 @@ const SideBarComponent = () => {
   const [loading, setLoading] = useState(false); // Track loading state
 
   const handleLogout = () => {
+    setLoading(true); // Show loader when logging out
     router.push("/");
     localStorage.removeItem("savedUser");
     setSavedUser("");
@@ -24,12 +25,15 @@ const SideBarComponent = () => {
   useEffect(() => {
     // Listen for route changes to turn off the loading state
     const handleRouteChangeComplete = () => setLoading(false);
+    const handleRouteChangeStart = () => setLoading(true); // Show loading when route change starts
 
-    // This event fires when route change is complete
+    // These events fire when route change starts and completes
+    router.events?.on("routeChangeStart", handleRouteChangeStart);
     router.events?.on("routeChangeComplete", handleRouteChangeComplete);
 
     return () => {
-      // Clean up the event listener when the component unmounts
+      // Clean up the event listeners when the component unmounts
+      router.events?.off("routeChangeStart", handleRouteChangeStart);
       router.events?.off("routeChangeComplete", handleRouteChangeComplete);
     };
   }, [router]);

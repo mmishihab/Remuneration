@@ -7,6 +7,7 @@ import { UserContext } from "../../../context/user.context";
 import { useRouter } from "next/navigation";
 import { database } from "../../../firebase.config"; // Ensure this path is correct
 import { ref, set, onValue, remove } from "firebase/database";
+import AlertComponent from "../../../components/AlertComponent";
 
 function UserProfile() {
   const { savedUser, setFormData } = useContext(UserContext);
@@ -24,6 +25,9 @@ function UserProfile() {
   const [examHours, setExamHours] = useState("");
   const [numberOfStudents, setNumberOfStudents] = useState("");
 
+  const [alertMessage, setAlertMessage] = useState(null); // State to handle alerts
+  const [alertType, setAlertType] = useState(""); // Success or error
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -152,7 +156,14 @@ useEffect(() => {
       ],
     })
       .then(() => {
-        alert(teacherId ? "Teacher updated successfully!" : "Teacher added successfully!");
+        if (teacherId) {
+          setAlertMessage("Teacher updated successfully!");
+          setAlertType("update"); // Alert type for updating
+        } else {
+          setAlertMessage("Teacher added successfully!");
+          setAlertType("add"); // Alert type for adding
+        }
+        // alert(teacherId ? "Teacher updated successfully!" : "Teacher added successfully!");
         setTeacherId(null);
         setFullName("");
         setAddress("");
@@ -164,6 +175,8 @@ useEffect(() => {
         setNumberOfStudents(""); 
       })
       .catch((error) => {
+        setAlertMessage("Error updating teacher.");
+        setAlertType("error");
         console.error("Error updating teacher: ", error);
       });
   };
@@ -173,9 +186,13 @@ useEffect(() => {
     const teachersRef = ref(database, `teachers/${id}`);
     remove(teachersRef)
       .then(() => {
-        alert("Teacher deleted successfully!");
+        // alert("Teacher deleted successfully!");
+        setAlertMessage("Teacher deleted successfully!");
+        setAlertType("delete");
       })
       .catch((error) => {
+        setAlertMessage("Error deleting teacher.");
+        setAlertType("error");
         console.error("Error deleting teacher: ", error);
       });
   };
@@ -188,101 +205,112 @@ useEffect(() => {
     <div style={styles.container}>
       <SideBarComponent />
       <div style={styles.profileContainer}>
-        <h1 style={styles.title}>Teacher&apos;s Information</h1>
-        <div style={styles.formContainer}>
-          <input
-            type="text"
-            placeholder="Teacher's Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="text"
-            placeholder="Name in Bangla"
-            value={banglaName}
-            onChange={(e) => setBanglaName(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="text"
-            placeholder="Teacher's Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="tel"
-            placeholder="Teacher's Mobile No."
-            value={mobileNo}
-            onChange={(e) => setMobileNo(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="text"
-            placeholder="Course Number"
-            value={courseNo}
-            onChange={(e) => setCourseNo(e.target.value)}
-            style={styles.input}
-          />
-          <select
-          value={examHours}
-          onChange={(e) => setExamHours(e.target.value)}
-          style={styles.input}
-        >
-          <option value="">Select Exam Hours</option>
-          <option value="4">4</option>
-          <option value="3">3</option>
-          <option value="2 to 2.5">2 to 2.5</option>
-        </select>
-          <input
-            type="number"
-            placeholder="Number of Students"
-            value={numberOfStudents}
-            onChange={(e) => setNumberOfStudents(e.target.value)}
-            style={styles.input}
-          />
-          <select value={role} onChange={handleRoleChange} style={styles.input}>
-            <option value="">Select Role</option>
-            <option value="teacher">Teacher</option>
-            <option value="chairman">Chairman</option>
-          </select>
+  <h1 style={styles.title}>Teacher&apos;s Information</h1>
+  <div style={styles.formContainer}>
+    <input
+      type="text"
+      placeholder="Teacher's Full Name"
+      value={fullName}
+      onChange={(e) => setFullName(e.target.value)}
+      style={styles.input}
+    />
+    <input
+      type="text"
+      placeholder="Name in Bangla"
+      value={banglaName}
+      onChange={(e) => setBanglaName(e.target.value)}
+      style={styles.input}
+    />
+    <input
+      type="text"
+      placeholder="Teacher's Address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+      style={styles.input}
+    />
+    <input
+      type="tel"
+      placeholder="Teacher's Mobile No."
+      value={mobileNo}
+      onChange={(e) => setMobileNo(e.target.value)}
+      style={styles.input}
+    />
+    <input
+      type="text"
+      placeholder="Course Number"
+      value={courseNo}
+      onChange={(e) => setCourseNo(e.target.value)}
+      style={styles.input}
+    />
+    <select
+      value={examHours}
+      onChange={(e) => setExamHours(e.target.value)}
+      style={styles.select}
+    >
+      <option value="">Select Exam Hours</option>
+      <option value="4">4</option>
+      <option value="3">3</option>
+      <option value="2 to 2.5">2 to 2.5</option>
+    </select>
+    <input
+      type="number"
+      placeholder="Number of Students"
+      value={numberOfStudents}
+      onChange={(e) => setNumberOfStudents(e.target.value)}
+      style={styles.input}
+    />
+    <select value={role} onChange={handleRoleChange} style={styles.select}>
+      <option value="">Select Role</option>
+      <option value="teacher">Teacher</option>
+      <option value="chairman">Chairman</option>
+    </select>
 
-          <button onClick={addOrUpdateTeacher} style={styles.button}>
-            {teacherId ? "Update Teacher" : "Add Teacher"}
-          </button>
-        </div>
-
-        <h2 style={styles.listTitle}>List of Teachers</h2>
-<table style={styles.table}>
-  <thead>
-    <tr>
-      <th style={styles.tableHeader}>Sl. No.</th>
-      <th style={styles.tableHeader}>Teacher&apos;s Name</th>
-      <th style={styles.tableHeader}>Course No</th>
-      <th style={styles.tableHeader}>Address</th>
-      <th style={styles.tableHeader}>Mobile No</th>
-      <th style={styles.tableHeader}>Role</th>
-      <th style={styles.tableHeader}>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {teachers.map((teacher, index) => (
-      <tr key={teacher.id} style={styles.tableRow}>
-        <td style={styles.tableCell}>{index + 1}</td>
-        <td style={styles.tableCell}>{teacher.fullName}</td>
-        <td style={styles.tableCell}>{teacher.jobs && teacher.jobs.length > 0 && teacher.jobs[0].courseNo ? teacher.jobs[0].courseNo : "No Course"}</td>
-        <td style={styles.tableCell}>{teacher.address}</td>
-        <td style={styles.tableCell}>{teacher.mobileNo}</td>
-        <td style={styles.tableCell}>{teacher.role}</td>
-        <td style={styles.tableCell}>
-          <button onClick={() => handleTeacherSelect(teacher)} style={{ ...styles.actionButton, backgroundColor: "#4CAF50", color: "white" }}>Edit</button>
-          <button onClick={() => deleteTeacher(teacher.id)} style={{ ...styles.actionButton, backgroundColor: "#f44336", color: "white" }}>Delete</button>
-        </td>
+    <button onClick={addOrUpdateTeacher} style={styles.button}>
+      {teacherId ? "Update Teacher" : "Add Teacher"}
+    </button>
+  </div>
+  <h2 style={styles.title}>List of Teachers</h2>
+<div style={styles.tableContainer}>
+  <table style={styles.table}>
+    <thead>
+      <tr>
+        <th style={styles.tableHeader}>Sl. No.</th>
+        <th style={styles.tableHeader}>Teacher&apos;s Name</th>
+        <th style={styles.tableHeader}>Course No</th>
+        <th style={styles.tableHeader}>Address</th>
+        <th style={styles.tableHeader}>Mobile No</th>
+        <th style={styles.tableHeader}>Role</th>
+        <th style={styles.tableHeader}>Actions</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {teachers.map((teacher, index) => (
+        <tr key={teacher.id} style={styles.tableRow}>
+          <td style={styles.tableCell}>{index + 1}</td>
+          <td style={styles.tableCell}>{teacher.fullName}</td>
+          <td style={styles.tableCell}>{teacher.jobs && teacher.jobs.length > 0 && teacher.jobs[0].courseNo ? teacher.jobs[0].courseNo : "No Course"}</td>
+          <td style={styles.tableCell}>{teacher.address}</td>
+          <td style={styles.tableCell}>{teacher.mobileNo}</td>
+          <td style={styles.tableCell}>{teacher.role}</td>
+          <td style={styles.tableCell}>
+            <div style={styles.actionButtons}>
+              <button onClick={() => handleTeacherSelect(teacher)} style={{ ...styles.actionButton, backgroundColor: "#4CAF50", color: "white" }}>Edit</button>
+              <button onClick={() => deleteTeacher(teacher.id)} style={{ ...styles.actionButton, backgroundColor: "#f44336", color: "white" }}>Delete</button>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+ {/* Alert System */}
+ {alertMessage && (
+          <AlertComponent
+            message={alertMessage}
+            type={alertType}
+            onClose={() => setAlertMessage(null)}
+          />
+        )}
 
       </div>
     </div>
@@ -360,26 +388,41 @@ const styles = {
     fontSize: "12px",
     cursor: "pointer",
   },
+  tableContainer: {
+    overflowX: "auto", // Allows horizontal scrolling if the table is too wide
+    borderRadius: "8px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    marginTop: "20px",
+  },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    marginBottom: "20px",
+    backgroundColor: "#fff", // White background for the table
   },
   tableHeader: {
     borderBottom: "2px solid #ddd",
     padding: "10px",
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#e898f5", // Header background color
+    color: "#fff", // Header text color
     textAlign: "left",
   },
   tableRow: {
     borderBottom: "1px solid #ddd",
+    transition: "background-color 0.2s", // Smooth transition for hover effect
+  },
+  tableRowHover: {
+    backgroundColor: "#f1f1f1", // Light gray background on hover
   },
   tableCell: {
     padding: "10px",
     textAlign: "left",
+    fontSize: "14px", // Adjust font size
+  },
+  actionButtons: {
+    display: "flex",
+    gap: "10px", // Space between action buttons
   },
   actionButton: {
-    marginLeft: "10px",
     padding: "5px 10px",
     borderRadius: "4px",
     border: "none",
@@ -387,7 +430,49 @@ const styles = {
     color: "#fff",
     fontSize: "12px",
     cursor: "pointer",
+  }, 
+  title: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#333", // Dark text color for title
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  formContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px", // Space between input fields
+  },
+  input: {
+    padding: "12px 15px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.3s",
+  },
+  select: {
+    padding: "12px 15px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.3s",
+  },
+  button: {
+    padding: "12px 15px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#007bff", // Button color
+    color: "#fff",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+  },
+  buttonHover: {
+    backgroundColor: "#0056b3", // Darker shade on hover
   },
 };
+
 
 export default UserProfile;

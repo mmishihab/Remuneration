@@ -14,6 +14,8 @@ function AllBill() {
   const [billsData, setBillsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [teacherList, setTeacherList] = useState([]); // List of teachers from Firebase
+  const [selectedTeacher, setSelectedTeacher] = useState(""); // Selected teacher for filtering
 
   useEffect(() => {
     setIsMounted(true);
@@ -24,7 +26,27 @@ function AllBill() {
       router.replace("/");
     }
   }, [isMounted, savedUser, router]);
-
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const dbRefPath = dbRef(database, "teachers/");
+        const snapshot = await get(dbRefPath);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const teachersArray = Object.keys(data).map((key) => ({
+            id: key,
+            ...data[key],
+          }));
+          setTeacherList(teachersArray); // Save teacher data for dropdown
+        } else {
+          console.log("No teacher data available");
+        }
+      } catch (error) {
+        console.error("Error fetching teacher data:", error);
+      }
+    };
+    fetchTeachers();
+  }, []);
   useEffect(() => {
     const fetchBillsData = async () => {
       try {
@@ -42,7 +64,6 @@ function AllBill() {
         const teacherBills = billsArray.filter(
           (bill) => bill.email === savedUser.email
         );
-        console.log("Filtered Teacher Bills: ", teacherBills);
         setBillsData(teacherBills);
       } else {
         // For chairman and authority, show all bills
@@ -62,6 +83,15 @@ function AllBill() {
       fetchBillsData();
     }
   }, [isMounted, savedUser]);
+ // Handle teacher selection
+ const handleTeacherChange = (event) => {
+  setSelectedTeacher(event.target.value);
+};
+
+// Filter bills based on selected teacher
+const filteredBills = selectedTeacher
+  ? billsData.filter((bill) => bill.name === selectedTeacher)
+  : billsData;
 
   const handleApproval = async (id) => {
     // Check if user is not a teacher before allowing approval
@@ -140,6 +170,42 @@ function AllBill() {
       <SideBarComponent />
       <div style={{ padding: 20, margin: 0, width: "70%", overflowY: "auto", maxHeight: "100vh" }}>
         <h1>All Bills</h1>
+        {/* Dropdown for selecting a teacher */}
+<div style={{ marginBottom: "20px" }}>
+  <label
+    htmlFor="teacher-select"
+    style={{
+      fontSize: "16px",
+      fontWeight: "bold",
+      color: "#333",
+      display: "block",
+      marginBottom: "8px",
+    }}>
+    Filter by Teacher:
+  </label>
+  <select
+    id="teacher-select"
+    onChange={handleTeacherChange}
+    value={selectedTeacher}
+    style={{
+      width: "100%",
+      padding: "10px",
+      fontSize: "14px",
+      borderRadius: "5px",
+      border: "1px solid #ccc",
+      backgroundColor: "#f9f9f9",
+      color: "#333",
+      cursor: "pointer",
+      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+    }}>
+    <option value="">All Teachers</option>
+    {teacherList.map((teacher) => (
+      <option key={teacher.id} value={teacher.fullName}>
+        {teacher.fullName}
+      </option>
+    ))}
+  </select>
+</div>
         {billsData.length === 0 ? (
           <p>No bills available</p>
         ) : (
@@ -177,7 +243,7 @@ function AllBill() {
                 </tr>
               </thead>
               <tbody>
-                {billsData.map((bill, index) => (
+                {filteredBills.map((bill, index) => (
                   <tr key={bill.id}>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       {index + 1}
