@@ -44,7 +44,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
 
   // Fetch teachers from the Realtime Database
   useEffect(() => {
-    const teachersRef = ref(database, 'teachers');
+    const teachersRef = ref(database, "teachers");
     onValue(teachersRef, (snapshot) => {
       const data = snapshot.val();
       const teacherList = data ? Object.keys(data).map(key => ({

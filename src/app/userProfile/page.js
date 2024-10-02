@@ -36,7 +36,7 @@ function UserProfile() {
 
   // Fetch teachers from the Realtime Database
   useEffect(() => {
-    const teachersRef = ref(database, 'teachers');
+    const teachersRef = ref(database, "teachers");
     onValue(teachersRef, (snapshot) => {
       const data = snapshot.val();
       const teacherList = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
@@ -188,7 +188,7 @@ useEffect(() => {
     <div style={styles.container}>
       <SideBarComponent />
       <div style={styles.profileContainer}>
-        <h1 style={styles.title}>Teacher's Information</h1>
+        <h1 style={styles.title}>Teacher&apos;s Information</h1>
         <div style={styles.formContainer}>
           <input
             type="text"
@@ -258,7 +258,7 @@ useEffect(() => {
   <thead>
     <tr>
       <th style={styles.tableHeader}>Sl. No.</th>
-      <th style={styles.tableHeader}>Teacher's Name</th>
+      <th style={styles.tableHeader}>Teacher&apos;s Name</th>
       <th style={styles.tableHeader}>Course No</th>
       <th style={styles.tableHeader}>Address</th>
       <th style={styles.tableHeader}>Mobile No</th>
@@ -276,8 +276,8 @@ useEffect(() => {
         <td style={styles.tableCell}>{teacher.mobileNo}</td>
         <td style={styles.tableCell}>{teacher.role}</td>
         <td style={styles.tableCell}>
-          <button onClick={() => handleTeacherSelect(teacher)} style={{ ...styles.actionButton, backgroundColor: '#4CAF50', color: 'white' }}>Edit</button>
-          <button onClick={() => deleteTeacher(teacher.id)} style={{ ...styles.actionButton, backgroundColor: '#f44336', color: 'white' }}>Delete</button>
+          <button onClick={() => handleTeacherSelect(teacher)} style={{ ...styles.actionButton, backgroundColor: "#4CAF50", color: "white" }}>Edit</button>
+          <button onClick={() => deleteTeacher(teacher.id)} style={{ ...styles.actionButton, backgroundColor: "#f44336", color: "white" }}>Delete</button>
         </td>
       </tr>
     ))}

@@ -68,7 +68,7 @@ const SideBarComponent = () => {
           }}
           onClick={() => handleNavigation("/userProfile")}
         >
-          Teacher's Information
+          Teacher&apos;s Information
         </li>
 
         <li
