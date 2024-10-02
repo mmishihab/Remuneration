@@ -3,9 +3,11 @@
 "use client";
 
 import React, { useState } from "react";
+import UserInitialData from "./UserInitialData";
 
 function BillForm({
   formData,
+  setFormData,
   handleChange,
   handleJobChange,
   handleAddJob,
@@ -33,6 +35,9 @@ const getAvailableSubCategories = (jobName, currentJobIndex) => {
 const isOnceSelectableJobUsed = formData.jobs.some((job) =>
   onceSelectableJobs.includes(job.jobName)
 );
+// const isOnceSelectableJobUsed = formData.jobs && Array.isArray(formData.jobs) && formData.jobs.some((job) =>
+//   onceSelectableJobs.includes(job.jobName)
+// );
  // Spinner styles
  const spinnerStyle = {
   width: '1em',
@@ -75,6 +80,8 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
         maxHeight: "600px",
       }}
     >
+       {/* Teacher and Role selection via UserInitialData */}
+    <UserInitialData savedUser={{}} setFormData={setFormData} />
       {/** Teacher Details **/}
       <div style={{ marginBottom: "15px" }}>
         <label style={labelStyle}>পরীক্ষকের নাম(বাংলায়):</label>
@@ -82,6 +89,17 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
           type="text"
           name="nameBangla"
           value={formData.nameBangla}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: "15px" }}>
+        <label style={labelStyle}>পরীক্ষকের নাম(English):</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           required
           style={inputStyle}
@@ -146,7 +164,7 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
       <div style={{ marginBottom: "15px" }}>
         <label style={labelStyle}>পরীক্ষা অনুষ্ঠানের তারিখ:</label>
         <input
-          type="text"
+          type="date"
           name="examDate"
           value={formData.examDate}
           onChange={handleChange}

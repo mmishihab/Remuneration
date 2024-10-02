@@ -1,98 +1,149 @@
-import { useEffect } from "react";
+/** @format */
+import { useEffect, useState } from "react";
+import { database } from "../firebase.config"; // Ensure this path is correct
+import { ref, onValue } from "firebase/database";
 
 const UserInitialData = ({ savedUser, setFormData }) => {
-  // Define a mapping of user data with both username and email
-  const userData = [
-    {
-      username: "abu jahed",
-      email: "abujahed@gmail.com",
-      nameBangla: "আবু জাহেদ",
-      phone: "012345678",
-      address: "Assistant Professor, University of Chittagong.",
-      subject: "EEE",
-      examYear: "202",
-      jobs: [
-        {
-          jobName: "Question Paper Formulation",
-          subCategory: "Theoretical Course",
-          courseNo: "EEE-811",
-          // numberOfStudents: "10",
-          examHours: "4",
-          subCategorySectors: "Honours/Masters",
-        },
-        {
-          jobName: "Question Paper Formulation",
-          subCategory: "Tutorial",
-          courseNo: "EEE-811",
-          numberOfStudents: "3",
-          // examHours: "4",
-          // subCategorySectors: "Honours/Masters",
-        },
-        {
-          jobName: "Test Answer Key",
-          subCategory: "Theoretical Course",
-          courseNo: "EEE-813",
-          // numberOfStudents: "15",
-          examHours: "3",
-          subCategorySectors: "Honours/Masters",
-        },
-        {
-          jobName: "Test Answer Key",
-          subCategory: "Tutorial",
-          courseNo: "EEE-815",
-          numberOfStudents: "3",
-          // examHours: "3",
-          // subCategorySectors: "Honours/Masters",
-        },
-      ],
-    },
-    {
-      username: "john doe",
-      email: "johndoe@gmail.com",
-      nameBangla: "জন ডো",
-      phone: "987654321",
-      address: "Lecturer",
-      jobs: [
-        {
-          jobName: "Exam Paper Grading",
-          subCategory: "Practical Course",
-          courseNo: "CS-101",
-          numberOfStudents: "30",
-          examHours: "2",
-          subCategorySectors: "Undergraduate",
-        },
-      ],
-    },
-    // Add more users here as needed
-  ];
+  const [role, setRole] = useState(""); // Track selected role
+  const [teachers, setTeachers] = useState([]); // Track fetched teachers
+  const [filteredTeachers, setFilteredTeachers] = useState([]); // Track filtered teachers based on role
+  const [selectedTeacher, setSelectedTeacher] = useState(null); // Track selected teacher
+
+  // Job definitions for different roles without accessing Firebase data directly
+  const jobsByRole = {
+    teacher: [
+      {
+        jobName: "Question Paper Formulation",
+        subCategory: "Theoretical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+        examHours: "", // Placeholder, will be set dynamically
+        numberOfStudents: "", // Placeholder, will be set dynamically
+        subCategorySectors: "Honours/Masters",
+      },
+      {
+        jobName: "Question Paper Writing",
+        subCategory: "Handwritten",
+        courseNo: "",
+        examHours:"",
+        numberOfStudents:"",
+        // subCategorySectors: "Honours/Masters",
+      },
+    ],
+    chairman: [
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Theoretical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+        examHours: "", // Placeholder, will be set dynamically
+        numberOfStudents: "", // Placeholder, will be set dynamically
+        subCategorySectors: "Honours/Masters",
+      }
+    ],
+    // Add more roles and their job definitions as needed
+  };
+
+  // Fetch teachers from the Realtime Database
+  useEffect(() => {
+    const teachersRef = ref(database, 'teachers');
+    onValue(teachersRef, (snapshot) => {
+      const data = snapshot.val();
+      const teacherList = data ? Object.keys(data).map(key => ({
+        id: key,
+        name: data[key].fullName, // Using fullName as username
+        email: data[key].email || "",
+        role: data[key].role || "teacher",
+        nameBangla: data[key].banglaName,
+        phone: data[key].mobileNo,
+        address: data[key].address,
+        subject: "EEE",
+        examYear:"202",
+        jobs: data[key].jobs || [], // Ensure jobs is defined
+      })) : [];
+      setTeachers(teacherList);
+      setFilteredTeachers(teacherList); // Initialize filtered teachers
+    });
+  }, []);
+
+  // Filter teachers based on selected role
+  useEffect(() => {
+    if (role) {
+      const filtered = teachers.filter(teacher => teacher.role === role);
+      setFilteredTeachers(filtered);
+      setSelectedTeacher(null); // Reset selected teacher when role changes
+    } else {
+      setFilteredTeachers(teachers); // Reset to all teachers if no role is selected
+    }
+  }, [role, teachers]);
 
   useEffect(() => {
-    // Normalize the username and email to lowercase for matching
-    const normalizedUsername = savedUser?.username?.toLowerCase();
-    const normalizedEmail = savedUser?.email?.toLowerCase();
+    if (selectedTeacher) {
+      // Get the jobs based on the selected role
+      const jobTemplate = jobsByRole[role] || [];
+      const jobs = jobTemplate.map(job => ({
+        ...job,
+        courseNo: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].courseNo || "" : "",
+        examHours: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].examHours || "" : "",
+        numberOfStudents: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].numberOfStudents || "" : "",
+      }));
 
-    // Check if there's a matching user with both username and email
-    const matchedUser = userData.find(
-      (user) =>
-        user.username.toLowerCase() === normalizedUsername &&
-        user.email.toLowerCase() === normalizedEmail
-    );
-
-    if (matchedUser) {
-      // Update the formData with the matched user's details
+      // Update the formData with the selected teacher's details
       setFormData((prevState) => ({
         ...prevState,
-        nameBangla: matchedUser.nameBangla,
-        phone: matchedUser.phone,
-        address: matchedUser.address,
-        subject: matchedUser.subject,
-        examYear: matchedUser.examYear,
-        jobs: matchedUser.jobs,
+        name:selectedTeacher.name,
+        nameBangla: selectedTeacher.nameBangla,
+        phone: selectedTeacher.phone,
+        address: selectedTeacher.address,
+        subject: "EEE",
+        examYear: "202",
+        jobs, // Fill job details as per the role
       }));
     }
-  }, [savedUser, setFormData]);
+  }, [selectedTeacher, setFormData, role]);
 
-  return null; // This component doesn't render anything.
+  return (
+    <div>
+      {/* Dropdown for selecting the role */}
+      <div style={{ marginBottom: "15px" }}>
+        <label>Role:</label>
+        <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
+          <option value="">Select Role</option>
+          <option value="teacher">Teacher</option>
+          <option value="chairman">Chairman</option>
+          {/* Add more roles if needed */}
+        </select>
+      </div>
+
+      {/* Dropdown for selecting the teacher based on the role */}
+      {role && (
+        <div style={{ marginBottom: "15px" }}>
+          <label>Select Teacher:</label>
+          <select
+            value={selectedTeacher?.name || ""}
+            onChange={(e) =>
+              setSelectedTeacher(filteredTeachers.find((teacher) => teacher.name === e.target.value))
+            }
+            style={inputStyle}
+          >
+            <option value="">Select Teacher</option>
+            {filteredTeachers.map((teacher) => (
+             <option key={teacher.id} value={teacher.name}>
+            {teacher.name} ({teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
+            </option>
+          ))}
+          </select>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: "4px",
+  border: "1px solid #ddd",
+  fontSize: "14px",
+  boxSizing: "border-box",
 };
 
 export default UserInitialData;

@@ -41,7 +41,7 @@ function RemunerationRateSheet() {
           src={rateSheetImage64}
           alt="Renumeration Rate Sheet"
           width={1000} // Specify width
-          height={1300} // Specify height
+          height={1600} // Specify height
         />
         </div>
         

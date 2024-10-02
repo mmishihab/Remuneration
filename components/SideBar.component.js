@@ -1,5 +1,3 @@
-/** @format */
-
 "use client";
 
 import React, { useContext, useState, useEffect } from "react";
@@ -17,10 +15,12 @@ const SideBarComponent = () => {
     localStorage.removeItem("savedUser");
     setSavedUser("");
   };
+
   const handleNavigation = (path) => {
     setLoading(true); // Start loading when navigating
     router.push(path);
   };
+
   useEffect(() => {
     // Listen for route changes to turn off the loading state
     const handleRouteChangeComplete = () => setLoading(false);
@@ -33,6 +33,7 @@ const SideBarComponent = () => {
       router.events?.off("routeChangeComplete", handleRouteChangeComplete);
     };
   }, [router]);
+
   return (
     <div style={styles.sidebar}>
       <ul
@@ -48,14 +49,16 @@ const SideBarComponent = () => {
           fontSize: 20,
           fontWeight: 400,
           paddingLeft: "15%",
-        }}>
+        }}
+      >
         <li
           style={{
             marginTop: "80px",
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/Dashboard")}>
+          onClick={() => handleNavigation("/Dashboard")}
+        >
           Dashboard
         </li>
         <li
@@ -63,8 +66,9 @@ const SideBarComponent = () => {
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/userProfile")}>
-          User Profile
+          onClick={() => handleNavigation("/userProfile")}
+        >
+          Teacher's Information
         </li>
 
         <li
@@ -72,29 +76,31 @@ const SideBarComponent = () => {
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/allApprovedBill")}>
+          onClick={() => handleNavigation("/allApprovedBill")}
+        >
           All Approved Bill
         </li>
 
         {(savedUser?.roles?.teacher || savedUser?.roles?.chairman) && (
-  <li
-    style={{
-      color: color.white,
-      cursor: "pointer",
-    }}
-    onClick={() => handleNavigation("/newBill")}
-  >
-    Enter New Bill
-  </li>
-)}
+          <li
+            style={{
+              color: color.white,
+              cursor: "pointer",
+            }}
+            onClick={() => handleNavigation("/newBill")}
+          >
+            Enter New Bill
+          </li>
+        )}
 
         <li
           style={{
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/allBill")}>
-          ALl Submitted Bill
+          onClick={() => handleNavigation("/allBill")}
+        >
+          All Submitted Bill
         </li>
 
         <li
@@ -102,18 +108,22 @@ const SideBarComponent = () => {
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={() => handleNavigation("/RemunerationRateSheet")}>
+          onClick={() => handleNavigation("/RemunerationRateSheet")}
+        >
           Remuneration Rate Sheet
         </li>
+
         <li
           style={{
             color: color.white,
             cursor: "pointer",
           }}
-          onClick={handleLogout}>
+          onClick={handleLogout}
+        >
           Logout
         </li>
       </ul>
+
       {/* Show loading spinner or text */}
       {loading && (
         <div style={styles.loadingContainer}>
@@ -133,7 +143,8 @@ const styles = {
     height: "100vh",
     width: "30%",
     overflowY: "hidden",
-  },loadingContainer: {
+  },
+  loadingContainer: {
     marginTop: "20px",
     display: "flex",
     alignItems: "center",

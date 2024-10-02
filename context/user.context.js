@@ -14,7 +14,7 @@ const UserContextProvider = (props) => {
     }
     return "";
   });
-
+  const [formData, setFormData] = useState({}); 
   // Save user to localStorage whenever savedUser changes
   useEffect(() => {
     if (savedUser) {
@@ -23,7 +23,7 @@ const UserContextProvider = (props) => {
   }, [savedUser]);
 
   return (
-    <UserContext.Provider value={{ savedUser, setSavedUser }}>
+    <UserContext.Provider value={{savedUser, setSavedUser, formData, setFormData}}>
       {props.children}
     </UserContext.Provider>
   );

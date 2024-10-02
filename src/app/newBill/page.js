@@ -48,7 +48,7 @@ function NewBill() {
   const [isClient, setIsClient] = useState(false);
 
   const initialFormData = {
-    name: savedUser.username,
+    name: "",
     email: savedUser.email,
     nameBangla: "",
     phone: "",
@@ -1269,10 +1269,11 @@ function NewBill() {
   return (
     <div
       style={{ padding: 0, margin: 0, display: "flex", flexDirection: "row" }}
-    > <UserInitialData savedUser={savedUser} setFormData={setFormData} />
+    > 
       <SideBarComponent />
       <div style={{ padding: 20, margin: 0, width: "70%", height: "100%" }}>
         <h1>Enter New Bill</h1>
+
         <BillForm
           formData={formData}
           handleChange={handleChange}
@@ -1286,36 +1287,9 @@ function NewBill() {
           handlesubCategorySectorsHoursChange={
             handlesubCategorySectorsHoursChange
           }
+          setFormData={setFormData} 
         />
-        {pdfUrl && (
-          <>
-            <a
-              href={pdfUrl}
-              download="form-submission.pdf"
-              style={{
-                display: "block",
-                marginTop: "10px",
-                color: "blue",
-                textDecoration: "underline",
-              }}
-            >
-              Click here to download the PDF
-            </a>
-            <button
-              onClick={() => window.open(pdfUrl)}
-              style={{
-                display: "block",
-                marginTop: "10px",
-                padding: "10px",
-                backgroundColor: "lightblue",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Preview PDF
-            </button>
-          </>
-        )}
+        
       </div>
     </div>
   );

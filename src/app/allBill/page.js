@@ -164,9 +164,7 @@ function AllBill() {
                   <th style={{ border: "1px solid black", padding: "8px" }}>
                     Account
                   </th>
-                  <th style={{ border: "1px solid black", padding: "8px" }}>
-                    Email
-                  </th>
+                 
                   <th style={{ border: "1px solid black", padding: "8px" }}>
                     PDF View
                   </th>
@@ -192,9 +190,6 @@ function AllBill() {
                     </td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       {bill.name}
-                    </td>
-                    <td style={{ border: "1px solid black", padding: "8px" }}>
-                      {bill.email}
                     </td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       <a
