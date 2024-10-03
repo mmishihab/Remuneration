@@ -229,7 +229,7 @@ const Dashboard = () => {
         {/* Motivational Quote */}
         <div style={{ textAlign: "center", margin: "20px 0" }}>
           <h2 style={{ fontStyle: "italic", color: "#555" }}>
-            "{randomQuote.text}"
+            &quot;{randomQuote.text}&quot;
           </h2>
           <p style={{ fontWeight: "bold" }}>– {randomQuote.author}</p>
         </div>

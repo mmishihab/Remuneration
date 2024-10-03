@@ -24,8 +24,8 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         jobName: "Question Paper Writing",
         subCategory: "Handwritten",
         courseNo: "",
-        examHours:"",
-        numberOfStudents:"",
+        examHours: "",
+        numberOfStudents: "",
         // subCategorySectors: "Honours/Masters",
       },
     ],
@@ -37,7 +37,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         examHours: "", // Placeholder, will be set dynamically
         numberOfStudents: "", // Placeholder, will be set dynamically
         subCategorySectors: "Honours/Masters",
-      }
+      },
     ],
     // Add more roles and their job definitions as needed
   };
@@ -47,18 +47,20 @@ const UserInitialData = ({ savedUser, setFormData }) => {
     const teachersRef = ref(database, "teachers");
     onValue(teachersRef, (snapshot) => {
       const data = snapshot.val();
-      const teacherList = data ? Object.keys(data).map(key => ({
-        id: key,
-        name: data[key].fullName, // Using fullName as username
-        email: data[key].email || "",
-        role: data[key].role || "teacher",
-        nameBangla: data[key].banglaName,
-        phone: data[key].mobileNo,
-        address: data[key].address,
-        subject: "EEE",
-        examYear:"202",
-        jobs: data[key].jobs || [], // Ensure jobs is defined
-      })) : [];
+      const teacherList = data
+        ? Object.keys(data).map((key) => ({
+            id: key,
+            name: data[key].fullName, // Using fullName as username
+            email: data[key].email || "",
+            role: data[key].role || "teacher",
+            nameBangla: data[key].banglaName,
+            phone: data[key].mobileNo,
+            address: data[key].address,
+            subject: "EEE",
+            examYear: "202",
+            jobs: data[key].jobs || [], // Ensure jobs is defined
+          }))
+        : [];
       setTeachers(teacherList);
       setFilteredTeachers(teacherList); // Initialize filtered teachers
     });
@@ -67,7 +69,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
   // Filter teachers based on selected role
   useEffect(() => {
     if (role) {
-      const filtered = teachers.filter(teacher => teacher.role === role);
+      const filtered = teachers.filter((teacher) => teacher.role === role);
       setFilteredTeachers(filtered);
       setSelectedTeacher(null); // Reset selected teacher when role changes
     } else {
@@ -75,21 +77,31 @@ const UserInitialData = ({ savedUser, setFormData }) => {
     }
   }, [role, teachers]);
 
+  // Update form data based on selected teacher
   useEffect(() => {
     if (selectedTeacher) {
       // Get the jobs based on the selected role
       const jobTemplate = jobsByRole[role] || [];
-      const jobs = jobTemplate.map(job => ({
+      const jobs = jobTemplate.map((job) => ({
         ...job,
-        courseNo: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].courseNo || "" : "",
-        examHours: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].examHours || "" : "",
-        numberOfStudents: selectedTeacher.jobs && selectedTeacher.jobs.length > 0 ? selectedTeacher.jobs[0].numberOfStudents || "" : "",
+        courseNo:
+          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+            ? selectedTeacher.jobs[0].courseNo || ""
+            : "",
+        examHours:
+          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+            ? selectedTeacher.jobs[0].examHours || ""
+            : "",
+        numberOfStudents:
+          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+            ? selectedTeacher.jobs[0].numberOfStudents || ""
+            : "",
       }));
 
       // Update the formData with the selected teacher's details
       setFormData((prevState) => ({
         ...prevState,
-        name:selectedTeacher.name,
+        name: selectedTeacher.name,
         nameBangla: selectedTeacher.nameBangla,
         phone: selectedTeacher.phone,
         address: selectedTeacher.address,
@@ -98,6 +110,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         jobs, // Fill job details as per the role
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeacher, setFormData, role]);
 
   return (
@@ -105,7 +118,11 @@ const UserInitialData = ({ savedUser, setFormData }) => {
       {/* Dropdown for selecting the role */}
       <div style={{ marginBottom: "15px" }}>
         <label>Role:</label>
-        <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          style={inputStyle}
+        >
           <option value="">Select Role</option>
           <option value="teacher">Teacher</option>
           <option value="chairman">Chairman</option>
@@ -121,17 +138,21 @@ const UserInitialData = ({ savedUser, setFormData }) => {
             value={selectedTeacher?.id || ""} // Change to use id for value
             onChange={(e) => {
               const selectedId = e.target.value;
-              setSelectedTeacher(filteredTeachers.find((teacher) => teacher.id === selectedId)); // Find by id
+              setSelectedTeacher(
+                filteredTeachers.find((teacher) => teacher.id === selectedId)
+              ); // Find by id
             }}
             style={inputStyle}
           >
             <option value="">Select Teacher</option>
             {filteredTeachers.map((teacher) => (
-              <option key={teacher.id} value={teacher.id}> {/* Use id as value */}
-                {teacher.name} ({teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
+              <option key={teacher.id} value={teacher.id}>
+                {/* Use id as value */}
+                {teacher.name} (
+                {teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
               </option>
             ))}
-        </select>
+          </select>
         </div>
       )}
     </div>
