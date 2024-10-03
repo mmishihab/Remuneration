@@ -118,19 +118,20 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         <div style={{ marginBottom: "15px" }}>
           <label>Select Teacher:</label>
           <select
-            value={selectedTeacher?.name || ""}
-            onChange={(e) =>
-              setSelectedTeacher(filteredTeachers.find((teacher) => teacher.name === e.target.value))
-            }
+            value={selectedTeacher?.id || ""} // Change to use id for value
+            onChange={(e) => {
+              const selectedId = e.target.value;
+              setSelectedTeacher(filteredTeachers.find((teacher) => teacher.id === selectedId)); // Find by id
+            }}
             style={inputStyle}
           >
             <option value="">Select Teacher</option>
             {filteredTeachers.map((teacher) => (
-             <option key={teacher.id} value={teacher.name}>
-            {teacher.name} ({teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
-            </option>
-          ))}
-          </select>
+              <option key={teacher.id} value={teacher.id}> {/* Use id as value */}
+                {teacher.name} ({teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
+              </option>
+            ))}
+        </select>
         </div>
       )}
     </div>

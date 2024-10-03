@@ -37,7 +37,12 @@ function AllBill() {
             id: key,
             ...data[key],
           }));
-          setTeacherList(teachersArray); // Save teacher data for dropdown
+          // Get unique teacher names
+          const uniqueTeachers = Array.from(
+            new Set(teachersArray.map((teacher) => teacher.fullName))
+          ).map((name) => teachersArray.find((teacher) => teacher.fullName === name));
+
+          setTeacherList(uniqueTeachers); // Save teacher data for dropdown
         } else {
           console.log("No teacher data available");
         }
@@ -184,27 +189,27 @@ const filteredBills = selectedTeacher
     Filter by Teacher:
   </label>
   <select
-    id="teacher-select"
-    onChange={handleTeacherChange}
-    value={selectedTeacher}
-    style={{
-      width: "100%",
-      padding: "10px",
-      fontSize: "14px",
-      borderRadius: "5px",
-      border: "1px solid #ccc",
-      backgroundColor: "#f9f9f9",
-      color: "#333",
-      cursor: "pointer",
-      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-    }}>
-    <option value="">All Teachers</option>
-    {teacherList.map((teacher) => (
-      <option key={teacher.id} value={teacher.fullName}>
-        {teacher.fullName}
-      </option>
-    ))}
-  </select>
+      id="teacher-select"
+      onChange={handleTeacherChange}
+      value={selectedTeacher}
+      style={{
+        width: "100%",
+        padding: "10px",
+        fontSize: "14px",
+        borderRadius: "5px",
+        border: "1px solid #ccc",
+        backgroundColor: "#f9f9f9",
+        color: "#333",
+        cursor: "pointer",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+      }}>
+      <option value="">All Teachers</option>
+      {teacherList.map((teacher) => (
+        <option key={teacher.id} value={teacher.fullName}>
+          {teacher.fullName}
+        </option>
+      ))}
+    </select>
 </div>
         {billsData.length === 0 ? (
           <p>No bills available</p>
@@ -230,7 +235,9 @@ const filteredBills = selectedTeacher
                   <th style={{ border: "1px solid black", padding: "8px" }}>
                     Account
                   </th>
-                 
+                  <th style={{ border: "1px solid black", padding: "8px" }}>
+                    Course No.
+                  </th>
                   <th style={{ border: "1px solid black", padding: "8px" }}>
                     PDF View
                   </th>
@@ -256,6 +263,9 @@ const filteredBills = selectedTeacher
                     </td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       {bill.name}
+                    </td>
+                    <td style={{ border: "1px solid black", padding: "8px" }}>
+                        {bill.jobs[0] ? bill.jobs[0].courseNo : "N/A"}
                     </td>
                     <td style={{ border: "1px solid black", padding: "8px" }}>
                       <a
