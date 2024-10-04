@@ -22,6 +22,7 @@ function UserProfile() {
   const [teacherId, setTeacherId] = useState(null); // For updating
   const [selectedTeacher, setSelectedTeacher] = useState(null); // For selected teacher
   const [courseNo, setCourseNo] = useState("");
+  const [courseNoP, setCourseNoP] = useState("");
   const [examHours, setExamHours] = useState("");
   const [numberOfStudents, setNumberOfStudents] = useState("");
 
@@ -64,15 +65,38 @@ useEffect(() => {
           examHours: examHours || "N/A",
           numberOfStudents: numberOfStudents || "N/A",
           subCategorySectors: "Honours/Masters",
+          paperType:"Full",
         },
         {
-          jobName: "Question Paper Writing",
-          subCategory: "Handwritten",
+          jobName: "Question Paper Formulation",
+          subCategory: "Tutorial",
+          courseNo: courseNo || "N/A",
+          noOfDay:"3",
+          paperType:"Half",
+        },
+        {
+          jobName: "Test Answer Key",
+          subCategory: "Theoretical Course",
           courseNo: courseNo || "N/A",
           examHours: examHours || "N/A",
           numberOfStudents: numberOfStudents || "N/A",
-          // subCategorySectors: "Honours/Masters",
+          subCategorySectors: "Honours/Masters",
+          paperType:"Half",
         },
+        {
+          jobName: "Test Answer Key",
+          subCategory: "Tutorial",
+          courseNo: courseNo || "N/A",
+          noOfDay:"3",
+          paperType:"Full",
+        },
+        {
+          jobName: "Inspector Honorarium (Per Tutorial)",
+          subCategory: "FixedValue",
+          numberOfStudents: numberOfStudents || "N/A",
+          courseNo: courseNo || "N/A"
+        },
+        
         // Add more jobs for the teacher if needed
       ];
     } else if (selectedTeacher.role === "chairman") {
@@ -88,7 +112,55 @@ useEffect(() => {
         // Add more jobs for the chairman if needed
       ];
     }
-
+    else if (selectedTeacher.role === "teacherP") {
+      jobs = [
+        {
+          jobName: "Question Paper Formulation",
+          subCategory: "Theoretical Course",
+          courseNo: courseNo || "N/A",
+          examHours: examHours || "N/A",
+          numberOfStudents: numberOfStudents || "N/A",
+          subCategorySectors: "Honours/Masters",
+          paperType:"Full",
+        },
+        {
+          jobName: "Question Paper Formulation",
+          subCategory: "Practical Course",
+          courseNo: courseNoP || "N/A",
+        },
+        {
+          jobName: "Question Paper Formulation",
+          subCategory: "Tutorial",
+          courseNo: courseNo || "N/A",
+          noOfDay:"3",
+          paperType:"Half",
+        },
+        {
+          jobName: "Test Answer Key",
+          subCategory: "Theoretical Course",
+          courseNo: courseNo || "N/A",
+          examHours: examHours || "N/A",
+          numberOfStudents: numberOfStudents || "N/A",
+          subCategorySectors: "Honours/Masters",
+          paperType:"Half",
+        },
+        {
+          jobName: "Test Answer Key",
+          subCategory: "Tutorial",
+          courseNo: courseNo || "N/A",
+          noOfDay:"3",
+          paperType:"Full",
+        },
+        {
+          jobName: "Inspector Honorarium (Per Tutorial)",
+          subCategory: "FixedValue",
+          numberOfStudents: numberOfStudents || "N/A",
+          courseNo: courseNo || "N/A"
+        },
+        
+        // Add more jobs for the teacher if needed
+      ];
+    }
     const dynamicUserData = {
       name: selectedTeacher.username,
       email: selectedTeacher.email,
@@ -123,11 +195,13 @@ useEffect(() => {
     if (teacher.jobs && teacher.jobs.length > 0) {
       const job = teacher.jobs[0]; // Assuming you're interested in the first job
       setCourseNo(job.courseNo || "");
+      setCourseNoP(job.courseNoP || "");
       setExamHours(job.examHours || "");
       setNumberOfStudents(job.numberOfStudents || "");
     } else {
       // Reset to empty if no job exists
       setCourseNo("");
+      setCourseNoP("");
       setExamHours("");
       setNumberOfStudents("");
     }
@@ -149,6 +223,7 @@ useEffect(() => {
           jobName: "Question Paper Formulation",
           subCategory: "Theoretical Course",
           courseNo: courseNo || "N/A",
+          courseNoP: courseNoP || "N/A",  // Practical courseNoP
           examHours: examHours || "N/A",
           numberOfStudents: numberOfStudents || "N/A",
           subCategorySectors: "Honours/Masters",
@@ -171,6 +246,7 @@ useEffect(() => {
         setBanglaName("");
         setRole("");
         setCourseNo(""); // Reset input fields
+        setCourseNoP(""); // Reset input fields
         setExamHours(""); 
         setNumberOfStudents(""); 
       })
@@ -242,6 +318,13 @@ useEffect(() => {
       onChange={(e) => setCourseNo(e.target.value)}
       style={styles.input}
     />
+    <input
+      type="text"
+      placeholder="Practical Course No. (Theory + Practical Teacher)"
+      value={courseNoP}
+      onChange={(e) => setCourseNoP(e.target.value)}
+      style={styles.input}
+    />
     <select
       value={examHours}
       onChange={(e) => setExamHours(e.target.value)}
@@ -261,7 +344,8 @@ useEffect(() => {
     />
     <select value={role} onChange={handleRoleChange} style={styles.select}>
       <option value="">Select Role</option>
-      <option value="teacher">Teacher</option>
+      <option value="teacher">Only Theory Teacher</option>
+      <option value="teacherP">Theory + Practical Teacher</option>
       <option value="chairman">Chairman</option>
     </select>
 

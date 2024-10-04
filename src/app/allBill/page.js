@@ -175,46 +175,46 @@ const filteredBills = selectedTeacher
       <SideBarComponent />
       <div style={{ padding: 20, margin: 0, width: "70%", overflowY: "auto", maxHeight: "100vh" }}>
         <h1>All Bills</h1>
-        {/* Dropdown for selecting a teacher */}
-<div style={{ marginBottom: "20px" }}>
-  <label
-    htmlFor="teacher-select"
-    style={{
-      fontSize: "16px",
-      fontWeight: "bold",
-      color: "#333",
-      display: "block",
-      marginBottom: "8px",
-    }}>
-    Filter by Teacher:
-  </label>
-  <select
-      id="teacher-select"
-      onChange={handleTeacherChange}
-      value={selectedTeacher}
-      style={{
-        width: "100%",
-        padding: "10px",
-        fontSize: "14px",
-        borderRadius: "5px",
-        border: "1px solid #ccc",
-        backgroundColor: "#f9f9f9",
-        color: "#333",
-        cursor: "pointer",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-      }}>
-      <option value="">All Teachers</option>
-      {teacherList.map((teacher) => (
-        <option key={teacher.id} value={teacher.fullName}>
-          {teacher.fullName}
-        </option>
-      ))}
-    </select>
-</div>
         {billsData.length === 0 ? (
           <p>No bills available</p>
         ) : (
           <div style={{ overflowY: "auto", maxHeight: "80vh"  }}>
+            {/* Dropdown for selecting a teacher */}
+            <div style={{ marginBottom: "20px" }}>
+              <label
+                htmlFor="teacher-select"
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#333",
+                  display: "block",
+                  marginBottom: "8px",
+                }}>
+                Filter by Teacher:
+              </label>
+              <select
+                  id="teacher-select"
+                  onChange={handleTeacherChange}
+                  value={selectedTeacher}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    fontSize: "14px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    backgroundColor: "#f9f9f9",
+                    color: "#333",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                  }}>
+                  <option value="">All Teachers</option>
+                  {teacherList.map((teacher) => (
+                    <option key={teacher.id} value={teacher.fullName}>
+                      {teacher.fullName}
+                    </option>
+                  ))}
+                </select>
+            </div>
             <table
               style={{
                 width: "100%",

@@ -309,7 +309,8 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               )}
 
               {job.subCategory === "Tutorial" && (
-                <div style={{ marginBottom: "15px" }}>
+                <>
+                  <div style={{ marginBottom: "15px" }}>
                   <label style={labelStyle}>Number of Question:</label>
                   <input
                     type="number"
@@ -321,6 +322,19 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                   />
                   {/* Add other fields specific to this job */}
                 </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label style={labelStyle}>Total Days:</label>
+                  <input
+                    type="text"
+                    name="noOfDay"
+                    value={job.noOfDay}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+                  {/* Add other fields specific to this job */}
+                </div>
+                </>
               )}
               {job.subCategory === "Terminal" && (
                 <div style={{ marginBottom: "15px" }}>
@@ -358,7 +372,6 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
                     name="numberOfStudents"
                     value={job.numberOfStudents}
                     onChange={(e) => handleJobChange(e, index)}
-                    required
                     style={inputStyle}
                   />
                   {/* Add other fields specific to this job */}
@@ -853,20 +866,6 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               )}
             </>
           )}
-          {job.jobName === "Practical Examination Honors" && (
-            <div style={{ marginBottom: "15px" }}>
-              <label style={labelStyle}>Exam Hours:</label>
-              <input
-                type="number"
-                name="examHours"
-                value={job.examHours}
-                onChange={(e) => handleJobChange(e, index)}
-                required
-                style={inputStyle}
-              />
-              {/* Add other fields specific to this job */}
-            </div>
-          )}
         {job.jobName === "Thesis Guide/Supervision" && (
             <>
               <div style={{ marginBottom: "15px" }}>
@@ -936,6 +935,87 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               
             </>
           )}
+          {job.jobName === "Practical Examination Honors" && (
+                <div style={{ marginBottom: "15px" }}>
+                  {/* Automatically set subcategory */}
+                  <input
+                    type="hidden"
+                    name="subCategory"
+                    value="Practical Course" // You can set any fixed value here
+                    onChange={(e) => handleSubCategoryChange(e, index)}
+                  />
+                  <div style={{ marginBottom: "15px" }}>
+                      <label style={labelStyle}>Hours:</label>
+                      <select
+                        name="examHours"
+                        value={job.examHours}
+                        onChange={(e) => handleJobChange(e, index)}
+                        required
+                        style={inputStyle}
+                      >
+                        <option value="">Hours</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                    <div style={{ marginBottom: "15px" }}>
+                  <label style={labelStyle}>Total Days:</label>
+                  <input
+                    type="text"
+                    name="noOfDay"
+                    value={job.noOfDay}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+                  {/* Add other fields specific to this job */}
+                </div>
+                    <div style={{ marginBottom: "15px" }}>
+                  <label style={labelStyle}>Course No:</label>
+                  <input
+                    type="text"
+                    name="courseNo"
+                    value={job.courseNo}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+                </div>
+                </div>
+              )}
+
+              {job.jobName === "Inspector Honorarium (Per Tutorial)" && (
+                <div style={{ marginBottom: "15px" }}>
+                  {/* Automatically set subcategory */}
+                  <input
+                    type="hidden"
+                    name="subCategory"
+                    value="FixedValue" // You can set any fixed value here
+                    onChange={(e) => handleSubCategoryChange(e, index)}
+                  />
+
+                  {/* Display relevant input fields for this job */}
+                  <label style={labelStyle}>Number of Scripts:</label>
+                  <input
+                    type="number"
+                    name="numberOfStudents"
+                    value={job.numberOfStudents}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+
+                  <label style={labelStyle}>Course No:</label>
+                  <input
+                    type="text"
+                    name="courseNo"
+                    value={job.courseNo}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+                </div>
+              )}
           {job.jobName === "Presidents Honorary Allowance" && (
             <div style={{ marginBottom: "15px" }}>
               {/* Add other fields specific to this job */}
@@ -946,29 +1026,49 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               {/* Add other fields specific to this job */}
             </div>
           )}
+          
           {/** Dynamic Input Fields Based on Sub-Category **/}
-          {[
-            "Question Paper Formulation",
-            "Question Paper Writing",
-            "Question Paper Photocopy",
-            "Test Answer Key",
-            "Examiner",
-            "Practical Examination Honors",
-          ].includes(job.jobName) &&
-            job.subCategory && (
-              <div style={{ marginBottom: "15px" }}>
-                <label style={labelStyle}>Course No:</label>
-                <input
-                  type="text"
-                  name="courseNo"
-                  value={job.courseNo}
-                  onChange={(e) => handleJobChange(e, index)}
-                  required
-                  style={inputStyle}
-                />
-                {/* Add other fields specific to this sub-category */}
-              </div>
-            )}
+          {
+              [
+                "Question Paper Formulation",
+                "Question Paper Writing",
+                "Question Paper Photocopy",
+                "Test Answer Key",
+                "Examiner",
+              ].includes(job.jobName) && (
+                <div style={{ marginBottom: "15px" }}>
+                  <label style={labelStyle}>Course No:</label>
+                  <input
+                    type="text"
+                    name="courseNo"
+                    value={job.courseNo}
+                    onChange={(e) => handleJobChange(e, index)}
+                    required
+                    style={inputStyle}
+                  />
+                  {/* Add other fields specific to this job */}
+                  
+                  {job.subCategory && (
+                    <>
+                    <div style={{ marginTop: "15px" }}>
+                      <label style={labelStyle}>Paper Type</label>
+                      <select
+                        name="paperType"
+                        value={job.paperType}
+                        onChange={(e) => handleJobChange(e, index)}
+                        style={inputStyle}
+                      >
+                        <option value="">Select Paper Type</option>
+                        <option value="Full">Full</option>
+                        <option value="Half">Half</option>
+                      </select>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )
+            }
+
 
           {/** Inputs for jobs without subcategories **/}
           {job.jobName === "Script Evaluation" && (
@@ -985,20 +1085,7 @@ const isOnceSelectableJobUsed = formData.jobs.some((job) =>
               {/* Add other fields specific to this job */}
             </div>
           )}
-        {job.jobName === "Inspector Honorarium (Per Tutorial)" && (
-            <div style={{ marginBottom: "15px" }}>
-              <label style={labelStyle}>Number of Scripts:</label>
-              <input
-                type="number"
-                name="numberOfStudents"
-                value={job.numberOfStudents}
-                onChange={(e) => handleJobChange(e, index)}
-                required
-                style={inputStyle}
-              />
-              {/* Add other fields specific to this job */}
-            </div>
-          )}
+          
           {job.jobName === "Viva Voce Examination" && (
             <div style={{ marginBottom: "15px" }}>
               <label style={labelStyle}>Exam Hours:</label>

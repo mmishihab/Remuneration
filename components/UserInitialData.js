@@ -19,14 +19,94 @@ const UserInitialData = ({ savedUser, setFormData }) => {
         examHours: "", // Placeholder, will be set dynamically
         numberOfStudents: "", // Placeholder, will be set dynamically
         subCategorySectors: "Honours/Masters",
+        paperType:"Full",
       },
       {
-        jobName: "Question Paper Writing",
-        subCategory: "Handwritten",
-        courseNo: "",
-        examHours: "",
+        jobName: "Question Paper Formulation",
+        subCategory: "Tutorial",
+        courseNo: "", // Placeholder, will be set dynamically
+        noOfDay:"3",
+        paperType:"Half",
+      },
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Theoretical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+        examHours: "", // Placeholder, will be set dynamically
+        numberOfStudents: "", // Placeholder, will be set dynamically
+        subCategorySectors: "Honours/Masters",
+        paperType:"Half",
+      },
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Tutorial",
+        courseNo: "", // Placeholder, will be set dynamically
+        noOfDay:"3",
+        paperType:"Full",
+      },
+      {
+        jobName: "Inspector Honorarium (Per Tutorial)",
+        subCategory: "FixedValue",
         numberOfStudents: "",
-        // subCategorySectors: "Honours/Masters",
+        courseNo: "",
+      },
+    ],
+    teacherP: [
+      {
+        jobName: "Question Paper Formulation",
+        subCategory: "Theoretical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+        examHours: "", // Placeholder, will be set dynamically
+        numberOfStudents: "", // Placeholder, will be set dynamically
+        subCategorySectors: "Honours/Masters",
+        paperType:"Full",
+      },
+      {
+         jobName: "Question Paper Formulation",
+          subCategory: "Practical Course",
+          courseNo: "", // Placeholder, will be set dynamically
+      },
+      {
+        jobName: "Question Paper Formulation",
+        subCategory: "Tutorial",
+        courseNo: "", // Placeholder, will be set dynamically
+        noOfDay:"3",
+        paperType:"Half",
+      },
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Theoretical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+        examHours: "", // Placeholder, will be set dynamically
+        numberOfStudents: "", // Placeholder, will be set dynamically
+        subCategorySectors: "Honours/Masters",
+        paperType:"Half",
+      },
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Practical Course",
+        courseNo: "", // Placeholder, will be set dynamically
+      },
+      {
+        jobName: "Test Answer Key",
+        subCategory: "Tutorial",
+        courseNo: "", // Placeholder, will be set dynamically
+        noOfDay:"3",
+        paperType:"Full",
+      },
+      
+      {
+        jobName: "Practical Examination Honors",
+        subCategory: "Practical Course",
+        noOfDay:"7",
+        examHours: "", // Placeholder, will be set dynamically
+        courseNo: "",
+      },
+      {
+        jobName: "Inspector Honorarium (Per Tutorial)",
+        subCategory: "FixedValue",
+        numberOfStudents: "",
+        courseNo: "",
       },
     ],
     chairman: [
@@ -82,22 +162,50 @@ const UserInitialData = ({ savedUser, setFormData }) => {
     if (selectedTeacher) {
       // Get the jobs based on the selected role
       const jobTemplate = jobsByRole[role] || [];
-      const jobs = jobTemplate.map((job) => ({
-        ...job,
-        courseNo:
-          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
-            ? selectedTeacher.jobs[0].courseNo || ""
-            : "",
-        examHours:
-          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
-            ? selectedTeacher.jobs[0].examHours || ""
-            : "",
-        numberOfStudents:
-          selectedTeacher.jobs && selectedTeacher.jobs.length > 0
-            ? selectedTeacher.jobs[0].numberOfStudents || ""
-            : "",
-      }));
-
+      const jobs = jobTemplate.map((job) => {
+        let courseNo = "";
+        let examHours = "";
+        let numberOfStudents = "";
+  
+        // Determine courseNo based on role and job subcategory
+        switch (true) {
+          case role === "teacherP" && job.subCategory === "Practical Course":
+            courseNo = selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+              ? selectedTeacher.jobs[0].courseNoP || ""
+              : "";
+            break;
+          default:
+            courseNo = selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+              ? selectedTeacher.jobs[0].courseNo || ""
+              : "";
+            break;
+        }
+  
+        // Determine examHours based on job name and subcategory
+        switch (true) {
+          case job.jobName === "Test Answer Key" && job.subCategory === "Practical Course":
+            examHours = "6 to 8";
+            break;
+          default:
+            examHours = selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+              ? selectedTeacher.jobs[0].examHours || ""
+              : "";
+            break;
+        }
+  
+        // Set numberOfStudents
+        numberOfStudents = selectedTeacher.jobs && selectedTeacher.jobs.length > 0
+          ? selectedTeacher.jobs[0].numberOfStudents || ""
+          : "";
+  
+        return {
+          ...job,
+          courseNo,
+          examHours,
+          numberOfStudents,
+        };
+      });
+  
       // Update the formData with the selected teacher's details
       setFormData((prevState) => ({
         ...prevState,
@@ -112,6 +220,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTeacher, setFormData, role]);
+  
 
   return (
     <div>
@@ -124,7 +233,8 @@ const UserInitialData = ({ savedUser, setFormData }) => {
           style={inputStyle}
         >
           <option value="">Select Role</option>
-          <option value="teacher">Teacher</option>
+          <option value="teacher">Theory Teacher</option>
+          <option value="teacherP">Theory + practical Teacher</option>
           <option value="chairman">Chairman</option>
           {/* Add more roles if needed */}
         </select>
@@ -149,7 +259,8 @@ const UserInitialData = ({ savedUser, setFormData }) => {
               <option key={teacher.id} value={teacher.id}>
                 {/* Use id as value */}
                 {teacher.name} (
-                {teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"})
+                {teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"}
+                {teacher.jobs.length > 0 && teacher.jobs[0].courseNoP ? `, ${teacher.jobs[0].courseNoP}` : ""})
               </option>
             ))}
           </select>

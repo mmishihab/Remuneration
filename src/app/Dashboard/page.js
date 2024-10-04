@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [totalBills, setTotalBills] = useState(0); // Total number of bills
   const [pendingBills, setPendingBills] = useState(0); // Bills pending for approval
   const [randomQuote, setRandomQuote] = useState({ text: "", author: "" }); // Selected random quote
+  const RECENT_ACTIVITY_LIMIT = 10; 
 
   useEffect(() => {
     // Select a random quote from the array
@@ -144,62 +145,66 @@ const Dashboard = () => {
 };
 
 
-  useEffect(() => {
-    const fetchRecentActivity = async () => {
-      try {
-        const dbRefPath = dbRef(database, "formSubmissions/");
-        const snapshot = await get(dbRefPath);
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const billsArray = Object.keys(data).map((key) => ({
-            id: key,
-            ...data[key],
-          }));
+useEffect(() => {
+  const fetchRecentActivity = async () => {
+    try {
+      const dbRefPath = dbRef(database, "formSubmissions/");
+      const snapshot = await get(dbRefPath);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const billsArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
 
-          const sortedActivity = billsArray.sort((a, b) => {
-            const convertTo24Hour = (time) => {
-              const [timeString, modifier] = time.split(" ");
-              let [hours, minutes, seconds] = timeString.split(":").map(Number);
-              if (modifier === "PM" && hours < 12) {
-                hours += 12;
-              } else if (modifier === "AM" && hours === 12) {
-                hours = 0;
-              }
-              return [hours, minutes, seconds];
-            };
-            const [aHours, aMinutes, aSeconds] = convertTo24Hour(a.time);
-            const [bHours, bMinutes, bSeconds] = convertTo24Hour(b.time);
-            const aTimestamp = new Date(
-              `20${a.date.split("/")[2]}`,
-              a.date.split("/")[0] - 1,
-              a.date.split("/")[1],
-              aHours,
-              aMinutes,
-              aSeconds
-            ).getTime();
-            const bTimestamp = new Date(
-              `20${b.date.split("/")[2]}`,
-              b.date.split("/")[0] - 1,
-              b.date.split("/")[1],
-              bHours,
-              bMinutes,
-              bSeconds
-            ).getTime();
-            return bTimestamp - aTimestamp; // Sort in descending order
-          });
-          setRecentActivity(sortedActivity);
-        } else {
-          console.log("No data available");
-        }
-      } catch (error) {
-        console.error("Error fetching recent activity:", error);
-      } finally {
-        setIsLoading(false);
+        const sortedActivity = billsArray.sort((a, b) => {
+          const convertTo24Hour = (time) => {
+            const [timeString, modifier] = time.split(" ");
+            let [hours, minutes, seconds] = timeString.split(":").map(Number);
+            if (modifier === "PM" && hours < 12) {
+              hours += 12;
+            } else if (modifier === "AM" && hours === 12) {
+              hours = 0;
+            }
+            return [hours, minutes, seconds];
+          };
+          const [aHours, aMinutes, aSeconds] = convertTo24Hour(a.time);
+          const [bHours, bMinutes, bSeconds] = convertTo24Hour(b.time);
+          const aTimestamp = new Date(
+            `20${a.date.split("/")[2]}`,
+            a.date.split("/")[0] - 1,
+            a.date.split("/")[1],
+            aHours,
+            aMinutes,
+            aSeconds
+          ).getTime();
+          const bTimestamp = new Date(
+            `20${b.date.split("/")[2]}`,
+            b.date.split("/")[0] - 1,
+            b.date.split("/")[1],
+            bHours,
+            bMinutes,
+            bSeconds
+          ).getTime();
+          return bTimestamp - aTimestamp; // Sort in descending order
+        });
+
+        // Limit to the latest 10 activities
+        const latestActivities = sortedActivity.slice(0, RECENT_ACTIVITY_LIMIT);
+
+        setRecentActivity(latestActivities);
+      } else {
+        console.log("No data available");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching recent activity:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchRecentActivity();
-  }, []);
+  fetchRecentActivity();
+}, []);
 
   
   if (isLoading) {
@@ -279,6 +284,10 @@ const Dashboard = () => {
             </ul>
           </div>
         </div>
+        {/* Footer */}
+      <footer style={{ textAlign: "center", padding: "10px", backgroundColor: "#f1f1f1", borderTop: "1px solid #ccc",marginBottom:"15px" }}>
+        <p style={{ margin: 0 }}>© 2024 Mujahidul Islam Shihab. All rights reserved.</p>
+      </footer>
       </div>
     </div>
   );

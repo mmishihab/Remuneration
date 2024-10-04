@@ -66,6 +66,8 @@ function NewBill() {
         numberOfStudents: "",
         examHours: "",
         subCategorySectors: "",
+        paperType:"",
+        noOfDay:""
       },
     ],
   };
@@ -100,13 +102,31 @@ function NewBill() {
 
   const handleJobChange = (e, index) => {
     const { name, value } = e.target;
-    const updatedJobs = [...formData.jobs];
-    updatedJobs[index][name] = value;
-    setFormData((prevState) => ({
-      ...prevState,
-      jobs: updatedJobs,
-    }));
+    
+    setFormData((prevState) => {
+      const updatedJobs = [...prevState.jobs];  // Copy the jobs array
+      updatedJobs[index] = {
+        ...updatedJobs[index],  // Spread existing job data
+        [name]: value,  // Dynamically update the field (e.g., numberOfStudents, courseNo)
+      };
+      
+      return {
+        ...prevState,
+        jobs: updatedJobs,  // Update the jobs array in formData
+      };
+    });
   };
+  
+
+  // const handleJobChange = (e, index) => {
+  //   const { name, value } = e.target;
+  //   const updatedJobs = [...formData.jobs];
+  //   updatedJobs[index][name] = value;
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     jobs: updatedJobs,
+  //   }));
+  // };
 
   const handleSubCategoryChange = (e, index) => {
     const { value } = e.target;
@@ -151,6 +171,8 @@ function NewBill() {
           courseNo: "",
           numberOfStudents: "",
           examHours: "",
+          paperType:"",
+          noOfDay:"",
         },
       ],
     }));
@@ -536,7 +558,8 @@ function NewBill() {
       "question paper writing",
       "question paper photocopy",
       "thesis guide/supervision",
-
+      "inspector honorarium (per tutorial)",
+      "practical examination honors"
     ];
 
     let lastJobNameMatch = false; // Track the last valid job name match
@@ -682,7 +705,9 @@ function NewBill() {
         templateRows[rowIndex][4] =
           job.numberOfStudents || templateRows[rowIndex][4];
         templateRows[rowIndex][5] = job.examHours || templateRows[rowIndex][5];
-        templateRows[rowIndex][8] = calculateRemuneration(job).toFixed(2);
+        templateRows[rowIndex][6] = job.noOfDay || templateRows[rowIndex][6];
+        templateRows[rowIndex][7] = job.paperType || templateRows[rowIndex][7];
+        // templateRows[rowIndex][8] = calculateRemuneration(job).toFixed(2);
         totalAmount += calculateRemuneration(job);
       } else {
         // Row not found: log this and insert a new row (but we should not get here if rows exist)
@@ -696,7 +721,7 @@ function NewBill() {
           job.courseNo || "",
           job.numberOfStudents || "",
           job.examHours || "",
-          "",
+          job.noOfDay || "",
           job.paperType || "",
           calculateRemuneration(job).toFixed(2),
         ]);
@@ -822,7 +847,8 @@ function NewBill() {
                 {},
                 {},
                 {},
-                calculateTotalAmount(formData.jobs).toFixed(2),
+                {},
+                // calculateTotalAmount(formData.jobs).toFixed(2),
               ],
             ],
           },
@@ -932,7 +958,8 @@ function NewBill() {
               width: '15%',
               stack: [
                 {
-                  text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  // text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  text:"........................",
                   style: "subInfoText",
                   font: "Nikosh",
                   bold: true,
@@ -1130,7 +1157,8 @@ function NewBill() {
               width: '10%',
               stack: [
                 {
-                  text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  // text: `${calculateTotalAmount(formData.jobs).toFixed(2)}/-  `, 
+                  text:"....................",
                   style: "subInfoText",
                   font: "Nikosh",
                   bold: true,
