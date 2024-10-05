@@ -259,7 +259,7 @@ const UserInitialData = ({ savedUser, setFormData }) => {
               <option key={teacher.id} value={teacher.id}>
                 {/* Use id as value */}
                 {teacher.name} (
-                {teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : "N/A"}
+                {teacher.jobs.length > 0 ? teacher.jobs[0].courseNo : ""}
                 {teacher.jobs.length > 0 && teacher.jobs[0].courseNoP ? `, ${teacher.jobs[0].courseNoP}` : ""})
               </option>
             ))}

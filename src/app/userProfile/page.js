@@ -184,6 +184,7 @@ useEffect(() => {
     setRole(e.target.value);
     setSelectedTeacher(null); // Reset selected teacher when role changes
   };
+  
 
   const handleTeacherSelect = (teacher) => {
     setSelectedTeacher(teacher);
@@ -272,6 +273,119 @@ useEffect(() => {
         console.error("Error deleting teacher: ", error);
       });
   };
+// Conditionally render input fields based on the selected role
+const renderInputFields = () => {
+  return (
+    <>
+      {/* Common input fields */}
+      {(role === "teacher" || role === "teacherP" || role === "chairman") && (
+        <>
+          <input
+            type="text"
+            placeholder="Teacher's Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="text"
+            placeholder="Name in Bangla"
+            value={banglaName}
+            onChange={(e) => setBanglaName(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="text"
+            placeholder="Teacher's Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            style={styles.input}
+          />
+          <input
+            type="tel"
+            placeholder="Teacher's Mobile No."
+            value={mobileNo}
+            onChange={(e) => setMobileNo(e.target.value)}
+            style={styles.input}
+          />
+        </>
+      )}
+
+      {/* Input fields for 'teacherP' */}
+      {role === "teacherP" && (
+        <>
+        <input
+          type="text"
+          placeholder="Course Number"
+          value={courseNo}
+          onChange={(e) => setCourseNo(e.target.value)}
+          style={styles.input}
+        />
+          <input
+            type="text"
+            placeholder="Practical Course No. (Theory + Practical Teacher)"
+            value={courseNoP}
+            onChange={(e) => setCourseNoP(e.target.value)}
+            style={styles.input}
+          />
+        </>
+      )}
+
+      {/* Input fields for 'teacher' */}
+      {role === "teacher" && (
+        <>
+          <input
+            type="text"
+            placeholder="Course Number"
+            value={courseNo}
+            onChange={(e) => setCourseNo(e.target.value)}
+            style={styles.input}
+          />
+          <select
+            value={examHours}
+            onChange={(e) => setExamHours(e.target.value)}
+            style={styles.select}
+          >
+            <option value="">Select Exam Hours</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2 to 2.5">2 to 2.5</option>
+          </select>
+          <input
+            type="number"
+            placeholder="Number of Students"
+            value={numberOfStudents}
+            onChange={(e) => setNumberOfStudents(e.target.value)}
+            style={styles.input}
+          />
+        </>
+      )}
+
+      {/* Input fields for 'chairman' */}
+      {role === "chairman" && (
+        <>
+          <input
+            type="text"
+            placeholder="Course Number"
+            value={courseNo}
+            onChange={(e) => setCourseNo(e.target.value)}
+            style={styles.input}
+          />
+          <select
+            value={examHours}
+            onChange={(e) => setExamHours(e.target.value)}
+            style={styles.select}
+          >
+            <option value="">Select Exam Hours</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2 to 2.5">2 to 2.5</option>
+          </select>
+        </>
+      )}
+    </>
+  );
+};
 
   if (!isClient || !savedUser) {
     return null;
@@ -283,72 +397,15 @@ useEffect(() => {
       <div style={styles.profileContainer}>
   <h1 style={styles.title}>Teacher&apos;s Information</h1>
   <div style={styles.formContainer}>
-    <input
-      type="text"
-      placeholder="Teacher's Full Name"
-      value={fullName}
-      onChange={(e) => setFullName(e.target.value)}
-      style={styles.input}
-    />
-    <input
-      type="text"
-      placeholder="Name in Bangla"
-      value={banglaName}
-      onChange={(e) => setBanglaName(e.target.value)}
-      style={styles.input}
-    />
-    <input
-      type="text"
-      placeholder="Teacher's Address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-      style={styles.input}
-    />
-    <input
-      type="tel"
-      placeholder="Teacher's Mobile No."
-      value={mobileNo}
-      onChange={(e) => setMobileNo(e.target.value)}
-      style={styles.input}
-    />
-    <input
-      type="text"
-      placeholder="Course Number"
-      value={courseNo}
-      onChange={(e) => setCourseNo(e.target.value)}
-      style={styles.input}
-    />
-    <input
-      type="text"
-      placeholder="Practical Course No. (Theory + Practical Teacher)"
-      value={courseNoP}
-      onChange={(e) => setCourseNoP(e.target.value)}
-      style={styles.input}
-    />
-    <select
-      value={examHours}
-      onChange={(e) => setExamHours(e.target.value)}
-      style={styles.select}
-    >
-      <option value="">Select Exam Hours</option>
-      <option value="4">4</option>
-      <option value="3">3</option>
-      <option value="2 to 2.5">2 to 2.5</option>
-    </select>
-    <input
-      type="number"
-      placeholder="Number of Students"
-      value={numberOfStudents}
-      onChange={(e) => setNumberOfStudents(e.target.value)}
-      style={styles.input}
-    />
+
     <select value={role} onChange={handleRoleChange} style={styles.select}>
       <option value="">Select Role</option>
       <option value="teacher">Only Theory Teacher</option>
       <option value="teacherP">Theory + Practical Teacher</option>
       <option value="chairman">Chairman</option>
     </select>
-
+{/* Conditionally rendered input fields based on selected role */}
+{renderInputFields()}
     <button onClick={addOrUpdateTeacher} style={styles.button}>
       {teacherId ? "Update Teacher" : "Add Teacher"}
     </button>
