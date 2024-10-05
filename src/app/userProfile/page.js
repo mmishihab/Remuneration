@@ -28,6 +28,11 @@ function UserProfile() {
 
   const [alertMessage, setAlertMessage] = useState(null); // State to handle alerts
   const [alertType, setAlertType] = useState(""); // Success or error
+  // State to store multiple courses
+  const [courses, setCourses] = useState([
+    { courseNo: "",courseNoP: "", examHours: "", numberOfStudents: "" }
+  ]);
+  const [isEditing, setIsEditing] = useState(false); // To track editing state
   
   useEffect(() => {
     setIsClient(true);
@@ -108,6 +113,7 @@ useEffect(() => {
           examHours: examHours || "N/A",
           numberOfStudents: numberOfStudents || "N/A",
           subCategorySectors: "Honours/Masters",
+          paperType:"Full",
         },
         // Add more jobs for the chairman if needed
       ];
@@ -175,14 +181,38 @@ useEffect(() => {
 
     setFormData(dynamicUserData);
   }
-}, [selectedTeacher, setFormData, courseNo, examHours, numberOfStudents]);
+}, [selectedTeacher, setFormData, courseNo, examHours, numberOfStudents,courseNoP]);
 
-
+ useEffect(() => {
+    if (selectedTeacher) {
+      setFullName(selectedTeacher.fullName);
+      setAddress(selectedTeacher.address);
+      setMobileNo(selectedTeacher.mobileNo);
+      setBanglaName(selectedTeacher.banglaName);
+      setRole(selectedTeacher.role);
+      setTeacherId(selectedTeacher.id);
+      const teacherCourses = selectedTeacher.jobs || [];
+      const mappedCourses = teacherCourses.map((job) => ({
+        courseNo: job.courseNo || "",
+        examHours: job.examHours || "",
+        numberOfStudents: job.numberOfStudents || "",
+      }));
+      setCourses(mappedCourses);
+      const practicalJob = teacherCourses.find((job) => job.subCategory === "Practical Course");
+      if (practicalJob) {
+        setCourseNoP(practicalJob.courseNo || ""); // Set practical course number
+      } else {
+        setCourseNoP(""); // Reset if not found
+      }
+      setIsEditing(true); // Set editing state to true
+    }
+  }, [selectedTeacher]);
 
   // Function to handle role selection
   const handleRoleChange = (e) => {
     setRole(e.target.value);
     setSelectedTeacher(null); // Reset selected teacher when role changes
+    setIsEditing(false); // Reset editing state
   };
   
 
@@ -193,24 +223,23 @@ useEffect(() => {
     setMobileNo(teacher.mobileNo);
     setBanglaName(teacher.banglaName);
     setTeacherId(teacher.id);
-    if (teacher.jobs && teacher.jobs.length > 0) {
-      const job = teacher.jobs[0]; // Assuming you're interested in the first job
-      setCourseNo(job.courseNo || "");
-      setCourseNoP(job.courseNoP || "");
-      setExamHours(job.examHours || "");
-      setNumberOfStudents(job.numberOfStudents || "");
-    } else {
-      // Reset to empty if no job exists
-      setCourseNo("");
-      setCourseNoP("");
-      setExamHours("");
-      setNumberOfStudents("");
-    }
+    // If the teacher has associated courses, populate them
+  const teacherCourses = teacher.jobs || [];
+  const mappedCourses = teacherCourses.map((job) => ({
+    courseNo: job.courseNo || "",
+    examHours: job.examHours || "",
+    numberOfStudents: job.numberOfStudents || ""
+  }));
+  setCourses(mappedCourses);
   };
 
   // Function to add or update teacher in Firebase
-  const addOrUpdateTeacher = () => {
-    const teachersRef = ref(database, `teachers/${teacherId || Date.now()}`);
+  // Function to add or update teacher in Firebase
+const addOrUpdateTeacher = () => {
+  if (!teacherId) {
+    // If there's no teacherId, create a new teacher
+    const newTeacherId = Date.now();
+    const teachersRef = ref(database, `teachers/${newTeacherId}`);
     set(teachersRef, {
       fullName,
       address,
@@ -219,44 +248,100 @@ useEffect(() => {
       role,
       username: fullName.toLowerCase().replace(/\s+/g, "_"),
       email: `${fullName.toLowerCase().replace(/\s+/g, "_")}@example.com`,
-      jobs: [
-        {
-          jobName: "Question Paper Formulation",
-          subCategory: "Theoretical Course",
-          courseNo: courseNo || "N/A",
-          courseNoP: courseNoP || "N/A",  // Practical courseNoP
-          examHours: examHours || "N/A",
-          numberOfStudents: numberOfStudents || "N/A",
-          subCategorySectors: "Honours/Masters",
-        },
-      ],
+      jobs: courses.map((course) => ({
+        jobName: "Question Paper Formulation",
+        subCategory: "Theoretical Course",
+        courseNo: course.courseNo || "N/A",
+        courseNoP: course.courseNoP || "N/A", // Add courseNoP here for practical courses
+        examHours: course.examHours || "N/A",
+        numberOfStudents: course.numberOfStudents || "N/A",
+        subCategorySectors: "Honours/Masters",
+      })),
     })
       .then(() => {
-        if (teacherId) {
-          setAlertMessage("Teacher updated successfully!");
-          setAlertType("update"); // Alert type for updating
-        } else {
-          setAlertMessage("Teacher added successfully!");
-          setAlertType("add"); // Alert type for adding
-        }
-        // alert(teacherId ? "Teacher updated successfully!" : "Teacher added successfully!");
-        setTeacherId(null);
-        setFullName("");
-        setAddress("");
-        setMobileNo("");
-        setBanglaName("");
-        setRole("");
-        setCourseNo(""); // Reset input fields
-        setCourseNoP(""); // Reset input fields
-        setExamHours(""); 
-        setNumberOfStudents(""); 
+        setAlertMessage("Teacher added successfully!");
+        setAlertType("add"); // Alert type for adding
+        resetForm(); // Reset form fields after adding
+      })
+      .catch((error) => {
+        setAlertMessage("Error adding teacher.");
+        setAlertType("error");
+        console.error("Error adding teacher: ", error);
+      });
+  } else {
+    // If teacherId exists, update the existing teacher
+    const teachersRef = ref(database, `teachers/${teacherId}`);
+    set(teachersRef, {
+      fullName,
+      address,
+      mobileNo,
+      banglaName,
+      role,
+      username: fullName.toLowerCase().replace(/\s+/g, "_"),
+      email: `${fullName.toLowerCase().replace(/\s+/g, "_")}@example.com`,
+      jobs: courses.map((course) => ({
+        jobName: "Question Paper Formulation",
+        subCategory: "Theoretical Course",
+        courseNo: course.courseNo || "N/A",
+        courseNoP: course.courseNoP || "N/A", // Add courseNoP here for practical courses
+        examHours: course.examHours || "N/A",
+        numberOfStudents: course.numberOfStudents || "N/A",
+        subCategorySectors: "Honours/Masters",
+      })),
+    })
+      .then(() => {
+        setAlertMessage("Teacher updated successfully!");
+        setAlertType("update"); // Alert type for updating
+        resetForm(); // Reset form fields after updating
       })
       .catch((error) => {
         setAlertMessage("Error updating teacher.");
         setAlertType("error");
         console.error("Error updating teacher: ", error);
       });
-  };
+  }
+};
+
+  // const addOrUpdateTeacher = () => {
+  //   courses.forEach((course) => {
+  //     const teachersRef = ref(database, `teachers/${teacherId || Date.now()}_${course.courseNo}`); // Use unique ID for each course
+  //     set(teachersRef, {
+  //       fullName,
+  //       address,
+  //       mobileNo,
+  //       banglaName,
+  //       role,
+  //       username: fullName.toLowerCase().replace(/\s+/g, "_"),
+  //       email: `${fullName.toLowerCase().replace(/\s+/g, "_")}@example.com`,
+  //       jobs: [
+  //         {
+  //           jobName: "Question Paper Formulation",
+  //           subCategory: "Theoretical Course",
+  //           courseNo: course.courseNo || "N/A",
+  //           courseNoP: course.courseNoP || "N/A", // Add courseNoP here for practical courses
+  //           examHours: course.examHours || "N/A",
+  //           numberOfStudents: course.numberOfStudents || "N/A",
+  //           subCategorySectors: "Honours/Masters"
+  //         }
+  //       ]
+  //     })
+  //       .then(() => {
+  //         setAlertMessage("Teacher added successfully!");
+  //         setAlertType("add"); // Alert type for adding
+  //         setFullName("");
+  //         setAddress("");
+  //         setMobileNo("");
+  //         setBanglaName("");
+  //         setRole("");
+  //         setCourses([{ courseNo: "", examHours: "", numberOfStudents: "" }]); // Reset courses
+  //       })
+  //       .catch((error) => {
+  //         setAlertMessage("Error updating teacher.");
+  //         setAlertType("error");
+  //         console.error("Error updating teacher: ", error);
+  //       });
+  //   });
+  // };
 
   // Function to delete a teacher from Firebase
   const deleteTeacher = (id) => {
@@ -273,6 +358,44 @@ useEffect(() => {
         console.error("Error deleting teacher: ", error);
       });
   };
+// Function to reset form
+const resetForm = () => {
+  setFullName("");
+  setAddress("");
+  setMobileNo("");
+  setBanglaName("");
+  setRole("");
+  setCourses([{ courseNo: "", examHours: "", numberOfStudents: "" }]); // Reset courses
+  setSelectedTeacher(null);
+  setIsEditing(false); // Reset editing state
+};
+   // Function to handle input change for a specific course
+   const handleCourseChange = (index, field, value) => {
+    const updatedCourses = courses.map((course, i) =>
+      i === index ? { ...course, [field]: value } : course
+    );
+    setCourses(updatedCourses);
+  };
+  
+  //  const handleCourseChange = (index, field, value) => {
+  //   const updatedCourses = courses.map((course, i) =>
+  //     i === index ? { ...course, [field]: value } : course
+  //   );
+  //   setCourses(updatedCourses);
+  // };
+
+  // Function to add a new course input set
+  const addAnotherCourse = () => {
+    setCourses([...courses, { courseNo: "", examHours: "", numberOfStudents: "" }]);
+  };
+
+  // Function to remove a course input set
+  const removeCourse = (index) => {
+    const updatedCourses = courses.filter((_, i) => i !== index);
+    setCourses(updatedCourses);
+  };
+
+  
 // Conditionally render input fields based on the selected role
 const renderInputFields = () => {
   return (
@@ -313,76 +436,146 @@ const renderInputFields = () => {
 
       {/* Input fields for 'teacherP' */}
       {role === "teacherP" && (
-        <>
-        <input
-          type="text"
-          placeholder="Course Number"
-          value={courseNo}
-          onChange={(e) => setCourseNo(e.target.value)}
-          style={styles.input}
-        />
-          <input
-            type="text"
-            placeholder="Practical Course No. (Theory + Practical Teacher)"
-            value={courseNoP}
-            onChange={(e) => setCourseNoP(e.target.value)}
-            style={styles.input}
-          />
-        </>
-      )}
+          <>
+            {courses.map((course, index) => (
+              <div key={index} style={styles.courseGroup}>
+                {/* Course inputs in a row */}
+                <div style={styles.inputRow}>
+                  <input
+                    type="text"
+                    placeholder="Course Number"
+                    value={course.courseNo}
+                    onChange={(e) => handleCourseChange(index, "courseNo", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  <select
+                    value={course.examHours}
+                    onChange={(e) => handleCourseChange(index, "examHours", e.target.value)}
+                    style={styles.courseInput}
+                  >
+                    <option value="">Select Exam Hours</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2 to 2.5">2 to 2.5</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Number of Students"
+                    value={course.numberOfStudents}
+                    onChange={(e) => handleCourseChange(index, "numberOfStudents", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Practical Course No. (Theory + Practical Teacher)"
+                    value={course.courseNoP}
+                    onChange={(e) => handleCourseChange(index, "courseNoP", e.target.value)}
+                    style={styles.input}
+                  />
+                  {/* Remove button for each course */}
+                  <button onClick={() => removeCourse(index)} style={styles.removeButton}>
+                    Remove Course
+                  </button>
+                </div>
+              </div>
+            ))}
+            {/* Add button at the bottom */}
+            <button onClick={addAnotherCourse} style={styles.addButton}>
+              Add Another Course
+            </button>
+          </>
+        )}
 
       {/* Input fields for 'teacher' */}
       {role === "teacher" && (
-        <>
-          <input
-            type="text"
-            placeholder="Course Number"
-            value={courseNo}
-            onChange={(e) => setCourseNo(e.target.value)}
-            style={styles.input}
-          />
-          <select
-            value={examHours}
-            onChange={(e) => setExamHours(e.target.value)}
-            style={styles.select}
-          >
-            <option value="">Select Exam Hours</option>
-            <option value="4">4</option>
-            <option value="3">3</option>
-            <option value="2 to 2.5">2 to 2.5</option>
-          </select>
-          <input
-            type="number"
-            placeholder="Number of Students"
-            value={numberOfStudents}
-            onChange={(e) => setNumberOfStudents(e.target.value)}
-            style={styles.input}
-          />
-        </>
-      )}
+          <>
+            {courses.map((course, index) => (
+              <div key={index} style={styles.courseGroup}>
+                {/* Course inputs in a row */}
+                <div style={styles.inputRow}>
+                  <input
+                    type="text"
+                    placeholder="Course Number"
+                    value={course.courseNo}
+                    onChange={(e) => handleCourseChange(index, "courseNo", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  <select
+                    value={course.examHours}
+                    onChange={(e) => handleCourseChange(index, "examHours", e.target.value)}
+                    style={styles.courseInput}
+                  >
+                    <option value="">Select Exam Hours</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2 to 2.5">2 to 2.5</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Number of Students"
+                    value={course.numberOfStudents}
+                    onChange={(e) => handleCourseChange(index, "numberOfStudents", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  {/* Remove button for each course */}
+                  <button onClick={() => removeCourse(index)} style={styles.removeButton}>
+                    Remove Course
+                  </button>
+                </div>
+              </div>
+            ))}
+            {/* Add button at the bottom */}
+            <button onClick={addAnotherCourse} style={styles.addButton}>
+              Add Another Course
+            </button>
+          </>
+        )}
+
 
       {/* Input fields for 'chairman' */}
       {role === "chairman" && (
-        <>
-          <input
-            type="text"
-            placeholder="Course Number"
-            value={courseNo}
-            onChange={(e) => setCourseNo(e.target.value)}
-            style={styles.input}
-          />
-          <select
-            value={examHours}
-            onChange={(e) => setExamHours(e.target.value)}
-            style={styles.select}
-          >
-            <option value="">Select Exam Hours</option>
-            <option value="4">4</option>
-            <option value="3">3</option>
-            <option value="2 to 2.5">2 to 2.5</option>
-          </select>
-        </>
-      )}
+          <>
+            {courses.map((course, index) => (
+              <div key={index} style={styles.courseGroup}>
+                {/* Course inputs in a row */}
+                <div style={styles.inputRow}>
+                  <input
+                    type="text"
+                    placeholder="Course Number"
+                    value={course.courseNo}
+                    onChange={(e) => handleCourseChange(index, "courseNo", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  <select
+                    value={course.examHours}
+                    onChange={(e) => handleCourseChange(index, "examHours", e.target.value)}
+                    style={styles.courseInput}
+                  >
+                    <option value="">Select Exam Hours</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2 to 2.5">2 to 2.5</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Number of Students"
+                    value={course.numberOfStudents}
+                    onChange={(e) => handleCourseChange(index, "numberOfStudents", e.target.value)}
+                    style={styles.courseInput}
+                  />
+                  {/* Remove button for each course */}
+                  <button onClick={() => removeCourse(index)} style={styles.removeButton}>
+                    Remove Course
+                  </button>
+                </div>
+              </div>
+            ))}
+            {/* Add button at the bottom */}
+            <button onClick={addAnotherCourse} style={styles.addButton}>
+              Add Another Course
+            </button>
+          </>
+        )}
     </>
   );
 };
@@ -612,6 +805,36 @@ const styles = {
   },
   buttonHover: {
     backgroundColor: "#0056b3", // Darker shade on hover
+  },
+  courseGroup: {
+    marginBottom: "15px",
+  },
+  inputRow: {
+    display: "flex",
+    gap: "10px", // Add some space between the input boxes
+  },
+  courseInput: {
+    flex: 1, // Make each course input smaller
+    padding: "8px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+  },
+  removeButton: {
+    backgroundColor: "#ff4d4d",
+    border: "none",
+    padding: "8px 10px",
+    color: "#fff",
+    cursor: "pointer",
+    borderRadius: "4px",
+  },
+  addButton: {
+    backgroundColor: "#4caf50",
+    border: "none",
+    padding: "10px 15px",
+    color: "#fff",
+    cursor: "pointer",
+    borderRadius: "4px",
+    marginTop: "15px",
   },
 };
 
